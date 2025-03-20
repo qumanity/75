@@ -77,8 +77,8 @@ COEFFICIENTS = {
 
 # Замените на ваш токен группы ВКонтакте
 logging.basicConfig(level=logging.INFO)
-bot = Bot("vk1.a.2xJ9Erjp0zJXSonrBiTJeJwjNIRkEuD0UwYLs22DPpscioaeRYv_VqSaQheuHYoeBFsq1R6raVq6hQ7uaS6sVbFllqreR6GHNj51eFFE2B5EPlR6j7UNRqF1yU5YDg550Zl3oD8eSgevlIv9rs2hkdqYpO-m-iYJ6SXEIDSZxbC-A3n26WSXTa9i-v5gEn8NAR592ntCwzxTVyXnttgyPA")
-api = API("vk1.a.2xJ9Erjp0zJXSonrBiTJeJwjNIRkEuD0UwYLs22DPpscioaeRYv_VqSaQheuHYoeBFsq1R6raVq6hQ7uaS6sVbFllqreR6GHNj51eFFE2B5EPlR6j7UNRqF1yU5YDg550Zl3oD8eSgevlIv9rs2hkdqYpO-m-iYJ6SXEIDSZxbC-A3n26WSXTa9i-v5gEn8NAR592ntCwzxTVyXnttgyPA")
+bot = Bot("vk1.a.35e6GiYzUeGur4vuP0EYIFKkJfS9Vw446NYkPITriiAZlvmxWbbEFHdh9Isad4YodCFDet9kianNh6FTUsDDN8SbD-n6vxfri00pQZCLlcqrCt64NQxsE2fTS3umbHAdyZoJs2RYuCoxzq9hZ3Wm3J3DCLkZ7Ln-n0aYqFQ0ZSAVRWpXBJK4vmVm6R5BAndC4QObH9j2kJQWrs30dLS--w")
+api = API("vk1.a.35e6GiYzUeGur4vuP0EYIFKkJfS9Vw446NYkPITriiAZlvmxWbbEFHdh9Isad4YodCFDet9kianNh6FTUsDDN8SbD-n6vxfri00pQZCLlcqrCt64NQxsE2fTS3umbHAdyZoJs2RYuCoxzq9hZ3Wm3J3DCLkZ7Ln-n0aYqFQ0ZSAVRWpXBJK4vmVm6R5BAndC4QObH9j2kJQWrs30dLS--w")
 labeler = BotLabeler()
 bl = BotLabeler()
 
@@ -89,7 +89,7 @@ user_tasks = {}
 # Токен бота и список администраторов
 CSV_URL = "https://docs.google.com/spreadsheets/d/1G3QYC8oQHAqGUfewK85BHjYsfKttyzC6CKa75DCuPj4/export?format=csv"
 REESTR_URL = "https://docs.google.com/spreadsheets/d/1MTOZEviCcE1JxpHmpteKVn11IeV6ayhpv6uu18UuQjg/export?format=csv"
-TOKEN = "vk1.a.2xJ9Erjp0zJXSonrBiTJeJwjNIRkEuD0UwYLs22DPpscioaeRYv_VqSaQheuHYoeBFsq1R6raVq6hQ7uaS6sVbFllqreR6GHNj51eFFE2B5EPlR6j7UNRqF1yU5YDg550Zl3oD8eSgevlIv9rs2hkdqYpO-m-iYJ6SXEIDSZxbC-A3n26WSXTa9i-v5gEn8NAR592ntCwzxTVyXnttgyPA"
+TOKEN = "vk1.a.35e6GiYzUeGur4vuP0EYIFKkJfS9Vw446NYkPITriiAZlvmxWbbEFHdh9Isad4YodCFDet9kianNh6FTUsDDN8SbD-n6vxfri00pQZCLlcqrCt64NQxsE2fTS3umbHAdyZoJs2RYuCoxzq9hZ3Wm3J3DCLkZ7Ln-n0aYqFQ0ZSAVRWpXBJK4vmVm6R5BAndC4QObH9j2kJQWrs30dLS--w"
 ADMINS = [527055305]
 OWNER_ID = 527055305
 LIST_URL = "https://docs.google.com/spreadsheets/d/1G0Rr2cmV7_pDW-sQlqe2_MKSm-rgGFb9VArN6r3C5UM/export?format=csv"
@@ -1374,7 +1374,7 @@ def extract_mention_id(mention):
     return int(match.group(1)) if match else None
 
 def get_nickname(user_id):
-    """ Получает никнейм пользователя из базы, если нет — возвращает имя ВК """
+    """ Получает никнейм пользователя из базы, если нет  — возвращает имя ВК """
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
@@ -1991,235 +1991,6 @@ def only_chats(func):
 # ==============================
 # Обработчики команд бота
 # ==============================
-
-# Команда: /перенорма <mention> – добавляет 5 баллов
-@bot.on.message(text="/перенорма день <mention>")
-@bot.on.message(text="/perenorma day <mention>")
-@bot.on.message(text="+перенорма день <mention>")
-@bot.on.message(text="+perenorma day <mention>")
-async def perenom_handler(message, mention: str):
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    target_id = await get_user_id_from_mention(mention)
-    if target_id is None:
-        await message.reply("Не удалось определить пользователя по упоминанию.")
-        return
-
-    update_points_balance(target_id, 3)
-    new_points = get_points(target_id)
-    admin_name = await get_user_name(message.from_id)
-    target_name = await get_user_name(target_id)
-    await message.reply(f"Добавлено 3 балла за дневную перенорму модератору [https://vk.com/id{target_id}|{target_name}]. Новый баланс: {new_points} Points.")
-    log_text = (f"[#LOGS_DAY_REPORTING] [https://vk.com/id{message.from_id}|{admin_name}] указал дневную перенорму "
-                f"модератору [https://vk.com/id{target_id}|{target_name}]. \nНовый баланс: {new_points} баллов.")
-    await log_event(log_text)
-
-# Команда: /норма <mention> – добавляет 3 балла
-@bot.on.message(text="/норма день <mention>")
-@bot.on.message(text="/norma day <mention>")
-@bot.on.message(text="+норма день <mention>")
-@bot.on.message(text="+norma day <mention>")
-async def norma_handler(message, mention: str):
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    target_id = await get_user_id_from_mention(mention)
-    if target_id is None:
-        await message.reply("Не удалось определить пользователя по упоминанию.")
-        return
-
-    update_points_balance(target_id, 2)
-    new_points = get_points(target_id)
-    admin_name = await get_user_name(message.from_id)
-    target_name = await get_user_name(target_id)
-    await message.reply(f"Добавлено 2 балла за дневной норматив модератору [https://vk.com/id{target_id}|{target_name}]. Новый баланс: {new_points} Points.")
-    log_text = (f"[#LOGS_DAY_REPORTING] [https://vk.com/id{message.from_id}|{admin_name}] указал дневной норматив "
-                f"модератору [https://vk.com/id{target_id}|{target_name}]. \nНовый баланс: {new_points} баллов.")
-    await log_event(log_text)
-
-# Команда: /дотяг <mention> – добавляет 1 балл
-@bot.on.message(text="/дотяг день <mention>")
-@bot.on.message(text="+дотяг день <mention>")
-@bot.on.message(text="/dotyag day <mention>")
-@bot.on.message(text="+dotyag day <mention>")
-async def dotyag_handler(message, mention: str):
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    target_id = await get_user_id_from_mention(mention)
-    if target_id is None:
-        await message.reply("Не удалось определить пользователя по упоминанию.")
-        return
-
-    update_points_balance(target_id, 1)
-    new_points = get_points(target_id)
-    admin_name = await get_user_name(message.from_id)
-    target_name = await get_user_name(target_id)
-    await message.reply(f"Добавлен 1 балл за дневной дотяг модератору [https://vk.com/id{target_id}|{target_name}]. Новый баланс: {new_points} Points.")
-    log_text = (f"[#LOGS_DAY_REPORTING] [https://vk.com/id{message.from_id}|{admin_name}] указал дневной дотяг "
-                f"модератору [https://vk.com/id{target_id}|{target_name}]. \nНовый баланс: {new_points} баллов.")
-    await log_event(log_text)
-
-# Команда: /inactive <mention> – снимает 3 балла (без проверки, даже если баллов меньше 3)
-@bot.on.message(text="/inactive day <mention>")
-@bot.on.message(text="/неактив день <mention>")
-@bot.on.message(text="+inactive day <mention>")
-@bot.on.message(text="+неактив день <mention>")
-async def inactive_handler(message, mention: str):
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    target_id = await get_user_id_from_mention(mention)
-    if target_id is None:
-        await message.reply("Не удалось определить пользователя по упоминанию.")
-        return
-
-    # Снимаем 3 балла; если у пользователя недостаточно, баланс может уйти в минус
-    update_points_balance(target_id, -3)
-    new_points = get_points(target_id)
-    admin_name = await get_user_name(message.from_id)
-    target_name = await get_user_name(target_id)
-    await message.reply(f"Снято 3 балла за дневной неактив у модератора [https://vk.com/id{target_id}|{target_name}]. Новый баланс: {new_points} Points.")
-    log_text = (f"[#LOGS_DAY_REPORTING] [https://vk.com/id{message.from_id}|{admin_name}] указал дневной неактив "
-                f"модератору [https://vk.com/id{target_id}|{target_name}]. \nНовый баланс: {new_points} баллов.")
-    await log_event(log_text)
-
-# Команда: /перенорма <mention> – добавляет 5 баллов
-@bot.on.message(text="/перенорма неделя <mention>")
-@bot.on.message(text="/perenorma week <mention>")
-@bot.on.message(text="+перенорма неделя <mention>")
-@bot.on.message(text="+perenorma week <mention>")
-async def perenom_handler(message, mention: str):
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    target_id = await get_user_id_from_mention(mention)
-    if target_id is None:
-        await message.reply("Не удалось определить пользователя по упоминанию.")
-        return
-
-    update_points_balance(target_id, 15)
-    new_points = get_points(target_id)
-    admin_name = await get_user_name(message.from_id)
-    target_name = await get_user_name(target_id)
-    await message.reply(f"[📌] Добавлено 15 баллов за недельную перенорму модератору [https://vk.com/id{target_id}|{target_name}]. Новый баланс: {new_points} Points.")
-    log_text = (f"[#LOGS_WEEK_REPORTING] [https://vk.com/id{message.from_id}|{admin_name}] указал недельную перенорму "
-                f"модератору [https://vk.com/id{target_id}|{target_name}]. \nНовый баланс: {new_points} баллов.")
-    await log_event(log_text)
-
-# Команда: /норма <mention> – добавляет 3 балла
-@bot.on.message(text="/норма неделя <mention>")
-@bot.on.message(text="/norma week <mention>")
-@bot.on.message(text="+норма неделя <mention>")
-@bot.on.message(text="+norma week <mention>")
-async def norma_handler(message, mention: str):
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    target_id = await get_user_id_from_mention(mention)
-    if target_id is None:
-        await message.reply("Не удалось определить пользователя по упоминанию.")
-        return
-
-    update_points_balance(target_id, 10)
-    new_points = get_points(target_id)
-    admin_name = await get_user_name(message.from_id)
-    target_name = await get_user_name(target_id)
-    await message.reply(f"[📌] Добавлено 10 баллов за недельный норматив модератору [https://vk.com/id{target_id}|{target_name}]. Новый баланс: {new_points} Points.")
-    log_text = (f"[#LOGS_WEEK_REPORTING] [https://vk.com/id{message.from_id}|{admin_name}] указал недельный норматив "
-                f"модератору [https://vk.com/id{target_id}|{target_name}]. \nНовый баланс: {new_points} баллов.")
-    await log_event(log_text)
-
-# Команда: /дотяг <mention> – добавляет 1 балл
-@bot.on.message(text="/дотяг неделя <mention>")
-@bot.on.message(text="+дотяг неделя <mention>")
-@bot.on.message(text="/dotyag week <mention>")
-@bot.on.message(text="+dotyag week <mention>")
-async def dotyag_handler(message, mention: str):
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    target_id = await get_user_id_from_mention(mention)
-    if target_id is None:
-        await message.reply("Не удалось определить пользователя по упоминанию.")
-        return
-
-    update_points_balance(target_id, 5)
-    new_points = get_points(target_id)
-    admin_name = await get_user_name(message.from_id)
-    target_name = await get_user_name(target_id)
-    await message.reply(f"[📌] Добавлено 5 баллов за недельный дотяг модератору [https://vk.com/id{target_id}|{target_name}]. Новый баланс: {new_points} Points.")
-    log_text = (f"[#LOGS_WEEK_REPORTING] [https://vk.com/id{message.from_id}|{admin_name}] указал недельный дотяг "
-                f"модератору [https://vk.com/id{target_id}|{target_name}]. \nНовый баланс: {new_points} баллов.")
-    await log_event(log_text)
-
-# Команда: /inactive <mention> – снимает 3 балла (без проверки, даже если баллов меньше 3)
-@bot.on.message(text="/nnorm week <mention>")
-@bot.on.message(text="/нетнормы неделя <mention>")
-@bot.on.message(text="+nnorm week <mention>")
-@bot.on.message(text="+нетнормы неделя <mention>")
-async def inactive_handler(message, mention: str):
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    target_id = await get_user_id_from_mention(mention)
-    if target_id is None:
-        await message.reply("Не удалось определить пользователя по упоминанию.")
-        return
-
-    # Снимаем 3 балла; если у пользователя недостаточно, баланс может уйти в минус
-    update_points_balance(target_id, -15)
-    new_points = get_points(target_id)
-    admin_name = await get_user_name(message.from_id)
-    target_name = await get_user_name(target_id)
-    await message.reply(f"[📌] Снято 15 баллов за отсутствие недельного отчета у модератора [https://vk.com/id{target_id}|{target_name}]. Новый баланс: {new_points} Points. \n\n[‼️] Не забудь выдать данному модератору выговор.")
-    log_text = (f"[#LOGS_WEEK_REPORTING] [https://vk.com/id{message.from_id}|{admin_name}] указал недельное отсутствие нормы "
-                f"модератору [https://vk.com/id{target_id}|{target_name}]. \nНовый баланс: {new_points} баллов.")
-    await log_event(log_text)
-
-# Команда: /inactive <mention> – снимает 3 балла (без проверки, даже если баллов меньше 3)
-@bot.on.message(text="/nnorm day <mention>")
-@bot.on.message(text="/нетнормы день <mention>")
-@bot.on.message(text="+nnorm day <mention>")
-@bot.on.message(text="+нетнормы день <mention>")
-async def inactive_handler(message, mention: str):
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    target_id = await get_user_id_from_mention(mention)
-    if target_id is None:
-        await message.reply("Не удалось определить пользователя по упоминанию.")
-        return
-
-    # Снимаем 3 балла; если у пользователя недостаточно, баланс может уйти в минус
-    update_points_balance(target_id, -3)
-    new_points = get_points(target_id)
-    admin_name = await get_user_name(message.from_id)
-    target_name = await get_user_name(target_id)
-    await message.reply(f"Снято 3 балла за отсутствие дневного отчета у модератора [https://vk.com/id{target_id}|{target_name}]. Новый баланс: {new_points} Points. \n\n[‼️] Не забудь выдать данному модератору предупреждение.")
-    log_text = (f"[#LOGS_DAY_REPORTING] [https://vk.com/id{message.from_id}|{admin_name}] указал дневное отсутствие нормы "
-                f"модератору [https://vk.com/id{target_id}|{target_name}]. \nНовый баланс: {new_points} баллов.")
-    await log_event(log_text)
-
 @bot.on.message(text="/bid")
 @bot.on.message(text="+bid")
 @bot.on.message(text="!bid")
@@ -2396,7 +2167,7 @@ async def snjat_reply_handler(message):
 
 
 
-@bot.on.chat_message(text="/gsync")
+@bot.on.chat_message(text="/sync")
 async def gsync_handler(message):
     chat_id = message.peer_id - 2000000000  # Определяем chat_id
 
@@ -2432,7 +2203,7 @@ async def kick_handler(message, arg: str):
         await message.reply("Не удалось извлечь идентификатор пользователя.")
         return
 
-    reason = parts[1] if len(parts) > 1 else "не указана."  # Если причина есть, то берем, если нет — по умолчанию
+    reason = parts[1] if len(parts) > 1 else "не указана."  # Если причина есть, то берем, если нет  — по умолчанию
 
     chat_id = message.chat_id  # текущая беседа
     admin_id = message.from_id
@@ -2468,7 +2239,7 @@ async def kick_reply_handler(message):
         # Получаем ID пользователя и причину
         uid = message.reply_message.from_id
         parts = message.text.split(" ", 1)
-        reason = parts[1] if len(parts) > 1 else "не указана."  # Если причина есть, то берем, если нет — по умолчанию
+        reason = parts[1] if len(parts) > 1 else "не указана."  # Если причина есть, то берем, если нет  — по умолчанию
 
         chat_id = message.chat_id
         admin_id = message.from_id
@@ -2571,7 +2342,7 @@ async def top_balance_handler(message):
     top_text = "🏆 Топ-10 пользователей по балансу:\n"
     for i, (user_id, balance) in enumerate(sorted_users[:10], 1):
         user_name = await get_user_name(user_id)
-        top_text += f"{i}. [https://vk.com/id{user_id}|{user_name}] — {balance} M-Coins\n"
+        top_text += f"{i}. [https://vk.com/id{user_id}|{user_name}]  — {balance} M-Coins\n"
     await message.reply(top_text)
 
 
@@ -2668,36 +2439,6 @@ async def edit_balance_handler(message, mention: str, amount: str):
     except Exception as e:
         await message.reply(f"Произошла ошибка: {e}")
 
-
-@bot.on.message(text="/editpoints <mention> <amount>")
-@bot.on.message(text="+editpoints <mention> <amount>")
-@bot.on.message(text="!editpoints <mention> <amount>")
-async def edit_points_handler(message, mention: str, amount: str):
-    try:
-        staff = get_staff()
-        user_role = next((role for uid, role in staff if uid == message.from_id), None)
-        if user_role not in ['depspec', 'owner']:
-            await message.reply("Недостаточно прав.")
-            return
-
-        target_id = await get_user_id_from_mention(mention)
-        if not target_id:
-            await message.reply("Не удалось определить пользователя.")
-            return
-
-        amount = int(amount)
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("UPDATE users SET points = ? WHERE user_id = ?", (amount, target_id))
-        conn.commit()
-        conn.close()
-
-        target_name = await get_user_name(target_id)
-        await message.reply(f"Баланс {target_name} изменен на {amount} баллов.")
-    except ValueError:
-        await message.reply("Укажите корректную сумму.")
-    except Exception as e:
-        await message.reply(f"Произошла ошибка: {e}")
 
 @bot.on.message(text="/lvl <mention> <level:int>")
 @bot.on.message(text="+lvl <mention> <level:int>")
@@ -2842,24 +2583,21 @@ async def nickname_list(message):
     nickname_list_text = ""
     for index, (vk_id, nickname) in enumerate(nickname_list):
         user_name = await get_user_name(vk_id)  # Получаем имя для каждого пользователя
-        nickname_list_text += f"{index + 1}) [https://vk.com/id{vk_id}|{user_name}] -- {nickname}\n"
+        nickname_list_text += f"{index + 1}) [https://vk.com/id{vk_id}|{user_name}] — {nickname}\n"
 
     await message.reply(f"Пользователи с никами:\n{nickname_list_text}")
 
 
 @bot.on.message(text=[
-    "/stats <mention>", "+stats <mention>", "!stats <mention>",
-    "/стата <mention>", "+стата <mention>", "!стата <mention>",
-    "/m <mention>", "+m <mention>", "!m <mention>",
-    "/я <mention>", "+я <mention>", "!я <mention>",
-    "/обомне <mention>", "+обомне <mention>", "!обомне <mention>"
+    "/баланс <mention>", "+баланс <mention>", "!баланс <mention>",
+    "/balance <mention>", "+balance <mention>", "!balance <mention>",
+    "/bal <mention>", "+bal <mention>", "!bal <mention>",
+    "/я <mention>", "+я <mention>", "!я <mention>"
 ])
 @bot.on.message(reply_message=True, text=[
-    "/stats", "+stats", "!stats",
-    "/стата", "+стата", "!стата",
-    "/m", "+m", "!m",
-    "/я", "+я", "!я",
-    "/обомне", "+обомне", "!обомне"
+    "/баланс", "+баланс", "!баланс",
+    "/balance", "+balance", "!balance",
+    "/bal", "+bal", "!bal"
 ])
 async def stats_handler(message: Message, mention: str = None):
     # Проверяем права вызывающего (только модераторы и выше)
@@ -2887,37 +2625,6 @@ async def stats_handler(message: Message, mention: str = None):
     # Регистрируем целевого пользователя (если ещё не зарегистрирован)
     add_user(target_id)
 
-    # Получаем привязанный ник из таблицы nicknames
-    import sqlite3
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT nickname FROM nicknames WHERE vk_id = ?", (target_id,))
-    result = cursor.fetchone()
-    if result:
-        target_nickname = result[0]
-    else:
-        await message.reply("У указанного пользователя отсутствует привязанный никнейм.")
-        conn.close()
-        return
-
-    # Получаем рефералов для целевого пользователя по его никнейму
-    cursor.execute("SELECT user_id FROM referrals WHERE referrer_nickname = ?", (target_nickname,))
-    referrals = cursor.fetchall()
-    conn.close()
-
-    referral_links = []
-    for ref in referrals:
-        ref_nick = get_nickname(ref[0])  # Функция получения ника
-        ref_link = f"[https://vk.com/id{ref[0]}|{ref_nick}]"
-        referral_links.append(ref_link)
-    referrals_count = len(referral_links)
-
-    # Получаем дополнительные данные для статистики
-    info = get_info_from_csv(target_nickname)
-    if "error" in info:
-        await message.reply(f"⚠️ {info['error']}")
-        return
-
     target_coins = get_balance(target_id)
     target_points = get_points(target_id)
     target_mod_level = get_user_level(target_id)
@@ -2933,53 +2640,22 @@ async def stats_handler(message: Message, mention: str = None):
     }
     mod_level_text = level_names.get(target_mod_level, str(target_mod_level))
 
-    # Расчёт дней до повышения
-    last_promotion = info.get('Последнее повышение', '')
-    current_position = info.get('Должность', '')
-    promotion_info = calculate_days_until_promotion(last_promotion, current_position)
-    iskl_info = calculate_days_until_iskl(last_promotion, current_position)
-
     # Формируем и отправляем сообщение со статистикой
     await message.reply(
-        f"🔑 Основная информация 🔑\n"
-        f"NickName: {target_nickname}\n"
-        f"Должность: {info.get('Должность', 'Неизвестно')}\n"
-        f"Уровень модер-прав: {info.get('lvl', 'Неизвестно')}\n\n"
-        f"📅 Важные даты и дни 📅\n"
-        f"Дата назначения: {info.get('Дата назначения', 'Неизвестно')}\n"
-        f"Последнее повышение: {info.get('Последнее повышение', 'Неизвестно')}\n"
-        f"Дней с момента повышения: {info.get('Дней на посту', 'Неизвестно')}\n"
-        f"Всего дней на модерке: {info.get('Дней всего', 'Неизвестно')}\n"
-        f"Дней до повышения: {promotion_info} (с искл. - {iskl_info})\n\n"
-        f"⛔ Активные наказания ⛔\n"
-        f"Количество предупреждений: {info.get('Предупреждения', '0')}\n"
-        f"Количество выговоров: {info.get('Выговоры', '0')}\n\n"
-        f"📄 Прочие данные 📄\n"
-        f"Количество баллов: {target_points}\n"
-        f"Количество коинов: {target_coins}\n"
-        f"Количество приглашенных: {referrals_count}\n\n"
-        f"💬 Сообщения 💬\n"
-        f"Количество сообщений: {messages_count}\n"
-        f"Последнее сообщение: {last_time}"
+        f"Текущий баланс коинов: {target_coins} MC.\n"
     )
 
 
 
-@bot.on.message(text="/stats")
-@bot.on.message(text="+stats")
-@bot.on.message(text="!stats")
-@bot.on.message(text="/стата")
-@bot.on.message(text="+стата")
-@bot.on.message(text="!стата")
-@bot.on.message(text="/m")
-@bot.on.message(text="+m")
-@bot.on.message(text="!m")
-@bot.on.message(text="/я")
-@bot.on.message(text="+я")
-@bot.on.message(text="!я")
-@bot.on.message(text="/обомне")
-@bot.on.message(text="+обомне")
-@bot.on.message(text="!обомне")
+@bot.on.message(text="/balance")
+@bot.on.message(text="+balance")
+@bot.on.message(text="!balance")
+@bot.on.message(text="/баланс")
+@bot.on.message(text="+баланс")
+@bot.on.message(text="!баланс")
+@bot.on.message(text="/bal")
+@bot.on.message(text="+bal")
+@bot.on.message(text="!bal")
 async def stats_without_mention(message):
     invoker_id = message.from_id
     add_user(invoker_id)  # Регистрируем вызывающего пользователя, если его ещё нет
@@ -2990,44 +2666,6 @@ async def stats_without_mention(message):
 
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
-    # Получаем никнейм пользователя
-    cursor.execute("SELECT nickname FROM nicknames WHERE vk_id = ?", (user_id,))
-    result = cursor.fetchone()
-    if result:
-        referrer_nickname = result[0]
-    else:
-        referrer_nickname = None
-
-        conn.close()
-        return
-
-    # Ищем пользователей, у которых этот ник записан как пригласивший
-    cursor.execute("SELECT user_id FROM referrals WHERE referrer_nickname = ?", (referrer_nickname,))
-    referals = cursor.fetchall()
-    conn.close()
-
-    referal_links = []
-    for ref_id in referals:
-        ref_nick = get_nickname(ref_id[0])  # Функция получения ника
-        ref_link = f"[https://vk.com/id{ref_id[0]}|{ref_nick}]"
-        referal_links.append(ref_link)
-
-    # Добавляем количество рефералов в начало сообщения
-    referals_count = len(referal_links)
-
-    # Получаем никнейм вызывающего пользователя
-    invoker_nickname = get_nickname(invoker_id)
-    if not invoker_nickname:
-        await message.reply("У вас отсутствует привязанный никнейм")
-        conn.close()
-        return
-
-    info = get_info_from_csv(invoker_nickname)
-    if "error" in info:
-        await message.reply(f"⚠️ {info['error']}")
-        return
-
     # Дополнительные данные для вызывающего пользователя
     invoker_coins = get_balance(invoker_id)
     invoker_points = get_points(invoker_id)
@@ -3044,37 +2682,8 @@ async def stats_without_mention(message):
     }
     mod_level_text = level_names.get(invoker_mod_level, invoker_mod_level)
 
-    # Расчёт дней до повышения
-    last_promotion = info.get('Последнее повышение', '')
-    current_position = info.get('Должность', '')
-    promotion_info = calculate_days_until_promotion(last_promotion, current_position)
-
-    # Расчёт дней до повышения
-    last_promotion = info.get('Последнее повышение', '')
-    current_position = info.get('Должность', '')
-    iskl_info = calculate_days_until_iskl(last_promotion, current_position)
-
     await message.reply(
-        f"🔑 Основная информация 🔑\n"
-        f"NickName: {invoker_nickname}\n"
-        f"Должность: {info.get('Должность', 'Неизвестно')}\n"
-        f"Уровень модер-прав: {info.get('lvl', 'Неизвестно')}\n\n"
-        f"📅 Важные даты и дни 📅\n"
-        f"Дата назначения: {info.get('Дата назначения', 'Неизвестно')}\n"
-        f"Последнее повышение: {info.get('Последнее повышение', 'Неизвестно')}\n"
-        f"Дней с момента повышения: {info.get('Дней на посту', 'Неизвестно')}\n"
-        f"Всего дней на модерке: {info.get('Дней всего', 'Неизвестно')}\n"
-        f"Дней до повышения: {promotion_info} (с искл. - {iskl_info})\n\n"
-        f"⛔ Активные наказания ⛔\n"
-        f"Количество предупреждений: {info.get('Предупреждения', '0')}\n"
-        f"Количество выговоров: {info.get('Выговоры', '0')}\n\n"
-        f"📄 Прочие данные 📄\n"
-        f"Количество баллов: {invoker_points}\n"
-        f"Количество коинов: {invoker_coins}\n"
-        f"Количество приглашенных: {referals_count}\n\n"  
-        f"💬 Сообщения 💬\n"   
-        f"Количество сообщений: {messages}\n"       
-        f"Последнее сообщение: {last_time}"   
+        f"Ваш текущий баланс коинов: {invoker_coins} MC."
     )
 
 @bot.on.message(text=["/moders", "!moders", "+moders", "/модеры", "!модеры", "+модеры"])
@@ -3156,7 +2765,7 @@ async def staff_handler(message):
         await message.reply("Список сотрудников пуст.")
         return
 
-    staff_text = "Владелец беседы - [https://vk.com/club229197061|SURGUT MODERS MANAGER]\n"
+    staff_text = "Владелец беседы - @club229805529 (ASTRAKHAN MANAGER)\n"
     roles = {
         "owner": "Спец.администраторы",
         "depspec": "Зам.Спец администратора",
@@ -3186,246 +2795,73 @@ async def help_handler(message: Message):
     logging.info(f"Получена команда /help от пользователя {message.from_id}")
     user_id = message.from_id
     user_role = get_user_role(user_id)
-    # Основные команды для всех пользователей
+
+    # Базовые команды, доступные всем пользователям
     help_text = """
 Команды пользователей:    
-/info -- информация о работе обменника
-/change -- обменять баллы на m-coins
-/shop -- показать доступные товары в магазине
-/buy -- купить товар из магазина
-/roulette -- играть в русскую рулетку
-/duel -- сразиться в дуэли с пользователем
-/slot -- играть в слот-машину
-/top -- топ пользователей по балансу
-/reward -- получить ежедневную награду
-/stats -- посмотреть свою статистику
-        """
-    # РОЛЬ СПЕЦА
-    if user_role == 'owner':
-        help_text += """
+/balance  — баланс коинов 
+/info  — информация о работе обменника
+/getid  — узнать оригинальную ссылку пользователя
+/bug  — сообщить разработчику о баге
+/shop — показать доступные товары в магазине
+/buy — купить товар из магазина
+/roulette — играть в русскую рулетку
+/duel — сразиться в дуэли с пользователем
+/slot — играть в слот-машину
+/top — топ пользователей по балансу
+/reward — получить ежедневную награду
+    """
+
+    # Определяем команды по ролям
+    role_commands = {
+        "moder": """
 Команды модератора:
-/moders -- полный список модерации
-/staff -- участники с ролями
-/apoints -- список баллов всех пользователей
-/clear -- очистить сообщение 
-/gnick -- проверить никнейм пользователя
-/apsync -- синхронизировать базу заявлений
-         """
-        help_text += """
+/moders — полный список модерации
+/staff — участники с ролями
+/clear — очистить сообщение 
+/gnick — проверить никнейм пользователя
+        """,
+        "senmoder": """
 Команды старшего модератора:
-/перенорма день/неделя -- выдать пользователю баллы за дневную/недельную перенорму
-/норма день/неделя -- выдать пользователю баллы за дневную/недельную норму
-/дотяг день/неделя -- выдать пользователю баллы за дневной/недельный дотяг
-/nnorm day/week -- забрать у пользователя баллы за дневное/недельное отсутствие нормы
-/inactive day -- забрать у пользователя баллы за дневной неактив
-/approve -- одобрить заявление на Мл.М
-/reject -- отклонить заявление на Мл.М
-/del -- удалить кандидата на Мл.М
-/заявления -- список заявлений с вердиктом
-/addmoder -- выдать права модератора пользователю
-/removerole -- забрать роль пользователя
-/kick -- исключить пользователя из беседы
-/reestr -- извлечь данные из реестра Google Sheets
-/ainfo -- узнать информацию о модераторе из Google Sheets
-/send -- отправить сообщение пользователям из базы данных модерации
-        """
-        help_text += """
+/addmoder — выдать права модератора пользователю
+/removerole — забрать роль пользователя
+/kick — исключить пользователя из беседы
+/send — отправить сообщение пользователям из базы данных модерации
+        """,
+        "admin": """
 Команды администратора:
-/lvl -- изменить уровень модератора
-/addsenmoder -- выдать права старшего модератора пользователю
-/снят -- исключить пользователя из всех бесед модерации
-/blacklistform -- заполнить форму на выдачу ЧСМ (данные из Google Sheets)
-         """
-        help_text += """
+/addsenmoder  — выдать права старшего модератора
+/sban  — заблокировать пользователя в сетке бесед
+        """,
+        "senadmin": """
 Команды старшего администратора:
-/bug -- сообщить о баге
-/addadmin -- выдать права администратора пользователю
-         """
-        help_text += """
+/addsenmoder — выдать права старшего модератора пользователю
+/lvl — изменить уровень модератора
+/снят — исключить пользователя из всех бесед модерации
+        """,
+        "depspec": """
 Команды зам.спец администратора:
-/aban -- закрыть пользователю доступ к экономике бота
-/addsenadmin -- выдать права старшего администратора пользователю
-/ban -- заблокировать пользователя в беседе
-/editpoints -- назначить новое количество баллов пользователю
-/addpoints -- выдать баллы пользователю
-/editcoins -- назначить новое количество коинов пользователю
-/addcoins -- выдать коины пользователю 
-        """
-        help_text += """
+/addsenadmin — выдать права старшего администратора пользователю
+/aban — закрыть пользователю доступ к экономике бота
+/editcoins — назначить новое количество коинов пользователю
+/addcoins — выдать коины пользователю 
+        """,
+        "owner": """
 Команды спец.администратора:
-/adelete -- удалить пользователя из базы данных
-/gsync -- синхронизировать беседу с базой данных
-/addzsa -- выдать права заместителя спец.админа пользователю
-/deldb -- удалить таблицу из базы данных
+/addzsa — выдать права заместителя спец.админа пользователю
+/adelete — удалить пользователя из базы данных
+/sync — синхронизировать беседу с базой данных
+/deldb — удалить таблицу из базы данных
         """
-    # РОЛЬ ЗАМА СПЕЦА
-    elif user_role == 'depspec':
-        help_text += """
-Команды модератора:
-/moders -- полный список модерации
-/staff -- участники с ролями
-/apoints -- список баллов всех пользователей
-/clear -- очистить сообщение 
-/gnick -- проверить никнейм пользователя
-/apsync -- синхронизировать базу заявлений
-         """
-        help_text += """
-Команды старшего модератора:
-/перенорма день/неделя -- выдать пользователю баллы за дневную/недельную перенорму
-/норма день/неделя -- выдать пользователю баллы за дневную/недельную норму
-/дотяг день/неделя -- выдать пользователю баллы за дневной/недельный дотяг
-/nnorm day/week -- забрать у пользователя баллы за дневное/недельное отсутствие нормы
-/inactive day -- забрать у пользователя баллы за дневной неактив
-/approve -- одобрить заявление на Мл.М
-/reject -- отклонить заявление на Мл.М
-/del -- удалить кандидата на Мл.М
-/заявления -- список заявлений с вердиктом
-/addmoder -- выдать права модератора пользователю
-/removerole -- забрать роль пользователя
-/kick -- исключить пользователя из беседы
-/reestr -- извлечь данные из реестра Google Sheets
-/ainfo -- узнать информацию о модераторе из Google Sheets
-/send -- отправить сообщение пользователям из базы данных модерации
-        """
-        help_text += """
-Команды администратора:
-/lvl -- изменить уровень модератора
-/addsenmoder -- выдать права старшего модератора пользователю
-/снят -- исключить пользователя из всех бесед модерации
-/blacklistform -- заполнить форму на выдачу ЧСМ (данные из Google Sheets)
-         """
-        help_text += """
-Команды старшего администратора:
-/bug -- сообщить о баге
-/addadmin -- выдать права администратора пользователю
-         """
-        help_text += """
-Команды зам.спец администратора:
-/aban -- закрыть пользователю доступ к экономике бота
-/addsenadmin -- выдать права старшего администратора пользователю
-/ban -- заблокировать пользователя в беседе
-/editpoints -- назначить новое количество баллов пользователю
-/addpoints -- выдать баллы пользователю
-/editcoins -- назначить новое количество коинов пользователю
-/addcoins -- выдать коины пользователю 
-        """
-    # РОЛЬ СТАРШЕГО АДМИНИСТРАТОРА
-    elif user_role == 'senadmin':
-        help_text += """
-Команды модератора:
-/moders -- полный список модерации
-/staff -- участники с ролями
-/apoints -- список баллов всех пользователей
-/clear -- очистить сообщение 
-/gnick -- проверить никнейм пользователя
-/apsync -- синхронизировать базу заявлений
-         """
-        help_text += """
-Команды старшего модератора:
-/перенорма день/неделя -- выдать пользователю баллы за дневную/недельную перенорму
-/норма день/неделя -- выдать пользователю баллы за дневную/недельную норму
-/дотяг день/неделя -- выдать пользователю баллы за дневной/недельный дотяг
-/nnorm day/week -- забрать у пользователя баллы за дневное/недельное отсутствие нормы
-/inactive day -- забрать у пользователя баллы за дневной неактив
-/approve -- одобрить заявление на Мл.М
-/reject -- отклонить заявление на Мл.М
-/del -- удалить кандидата на Мл.М
-/заявления -- список заявлений с вердиктом
-/addmoder -- выдать права модератора пользователю
-/removerole -- забрать роль пользователя
-/kick -- исключить пользователя из беседы
-/reestr -- извлечь данные из реестра Google Sheets
-/ainfo -- узнать информацию о модераторе из Google Sheets
-/send -- отправить сообщение пользователям из базы данных модерации
-        """
-        help_text += """
-Команды администратора:
-/lvl -- изменить уровень модератора
-/addsenmoder -- выдать права старшего модератора пользователю
-/снят -- исключить пользователя из всех бесед модерации
-/blacklistform -- заполнить форму на выдачу ЧСМ (данные из Google Sheets)
-         """
-        help_text += """
-Команды старшего администратора:
-/bug -- сообщить о баге
-/addadmin -- выдать права администратора пользователю
-         """
-    # РОЛЬ АДМИНИСТРАТОРА
-    elif user_role == 'admin':
-        help_text += """
-Команды модератора:
-/moders -- полный список модерации
-/staff -- участники с ролями
-/apoints -- список баллов всех пользователей
-/clear -- очистить сообщение 
-/gnick -- проверить никнейм пользователя
-/apsync -- синхронизировать базу заявлений
-         """
-        help_text += """
-Команды старшего модератора:
-/перенорма день/неделя -- выдать пользователю баллы за дневную/недельную перенорму
-/норма день/неделя -- выдать пользователю баллы за дневную/недельную норму
-/дотяг день/неделя -- выдать пользователю баллы за дневной/недельный дотяг
-/nnorm day/week -- забрать у пользователя баллы за дневное/недельное отсутствие нормы
-/inactive day -- забрать у пользователя баллы за дневной неактив
-/approve -- одобрить заявление на Мл.М
-/reject -- отклонить заявление на Мл.М
-/del -- удалить кандидата на Мл.М
-/заявления -- список заявлений с вердиктом
-/addmoder -- выдать права модератора пользователю
-/removerole -- забрать роль пользователя
-/kick -- исключить пользователя из беседы
-/reestr -- извлечь данные из реестра Google Sheets
-/ainfo -- узнать информацию о модераторе из Google Sheets
-/send -- отправить сообщение пользователям из базы данных модерации
-        """
-        help_text += """
-Команды администратора:
-/lvl -- изменить уровень модератора
-/addsenmoder -- выдать права старшего модератора пользователю
-/снят -- исключить пользователя из всех бесед модерации
-/blacklistform -- заполнить форму на выдачу ЧСМ (данные из Google Sheets)
-         """
-    # РОЛЬ СТАРШЕГО МОДЕРАТОРА
-    elif user_role == 'senmoder':
-        help_text += """
-Команды модератора:
-/moders -- полный список модерации
-/staff -- участники с ролями
-/apoints -- список баллов всех пользователей
-/clear -- очистить сообщение 
-/gnick -- проверить никнейм пользователя
-/apsync -- синхронизировать базу заявлений
-         """
-        help_text += """
-Команды старшего модератора:
-/перенорма день/неделя -- выдать пользователю баллы за дневную/недельную перенорму
-/норма день/неделя -- выдать пользователю баллы за дневную/недельную норму
-/дотяг день/неделя -- выдать пользователю баллы за дневной/недельный дотяг
-/nnorm day/week -- забрать у пользователя баллы за дневное/недельное отсутствие нормы
-/inactive day -- забрать у пользователя баллы за дневной неактив
-/approve -- одобрить заявление на Мл.М
-/reject -- отклонить заявление на Мл.М
-/del -- удалить кандидата на Мл.М
-/заявления -- список заявлений с вердиктом
-/addmoder -- выдать права модератора пользователю
-/removerole -- забрать роль пользователя
-/kick -- исключить пользователя из беседы
-/reestr -- извлечь данные из реестра Google Sheets
-/ainfo -- узнать информацию о модераторе из Google Sheets
-/send -- отправить сообщение пользователям из базы данных модерации
-        """
-    # РОЛЬ МОДЕРАТОРА
-    elif user_role == 'moder':
-        help_text += """
-Команды модератора:
-/moders -- полный список модерации
-/staff -- участники с ролями
-/apoints -- список баллов всех пользователей
-/clear -- очистить сообщение
-/gnick -- проверить никнейм пользователя 
-/apsync -- синхронизировать базу заявлений
-         """
+    }
+
+    # Порядок ролей для накопления команд
+    role_order = ["moder", "senmoder", "admin", "senadmin", "depspec", "owner"]
+
+    if user_role in role_order:
+        role_index = role_order.index(user_role)
+        for i in range(role_index + 1):
+            help_text += role_commands[role_order[i]]
 
     # Формируем клавиатуру с кнопкой "Альтернативные команды"
     main_keyboard = {
@@ -3444,15 +2880,16 @@ async def help_handler(message: Message):
         ]
     }
 
+    # Отправляем сообщение с командами
     try:
         sent_message = await message.reply(help_text, keyboard=json.dumps(main_keyboard))
-        help_cmid = sent_message.conversation_message_id  # Для удаления
+        help_cmid = sent_message.conversation_message_id  # Сохраняем ID сообщения
         logging.info(f"/help сообщение отправлено, conversation_message_id: {help_cmid}")
     except Exception as e:
         logging.error(f"Ошибка при отправке /help: {e}")
-        await message.answer("⚠ Ошибка при отправке сообщения.")
+        await message.answer("Ошибка при отправке сообщения.")
 
-# Обработчик альтернативных команд
+
 @bot.on.message(payload={"command": "alt_commands"})
 async def alt_commands_callback(message: Message):
     global help_cmid, alt_cmid
@@ -3460,246 +2897,74 @@ async def alt_commands_callback(message: Message):
 
     user_id = message.from_id
     user_role = get_user_role(user_id)
-    # Основные команды для всех пользователей
+    
+    # Базовые команды для всех пользователей
     alt_text = """
 Альтернативные команды
 
-Команды участников:    
-/info -- инфо,бот
-/change -- обмен
-/shop -- магазин,store
-/buy -- купить
-/roulette -- rr,рулетка
-/duel -- дуэль,сразиться
-/slot -- слот,слоты,slots
-/top -- топ
-/reward -- бонус,bonus
-/stats -- m,я,стата
-        """
-    # РОЛЬ СПЕЦА
-    if user_role == 'owner':
-        alt_text += """
+Команды пользователей: 
+/balance  — баланс,bal
+/info  — инфо,бот
+/getid  — айди,id,ид
+/bug  — баг
+/shop — магазин,store
+/buy — купить
+/roulette — рулетка,rr
+/duel — дуэль,сразиться
+/slot — слот
+/top — топ
+/reward — бонус,bonus
+    """
+
+    # Команды для ролей
+    role_commands = {
+        "moder": """
 Команды модератора:
-/moders -- модеры
-/staff -- стафф
-/apoints -- все баллы,adminpoints
-/clear -- чистка,очистить
-/gnick -- nicklist,checknick
-/apsync -- null
-         """
-        alt_text += """
+/moders — модеры
+/staff — стафф
+/clear — чистка,очистить
+/gnick — nicklist,checknick
+        """,
+        "senmoder": """
 Команды старшего модератора:
-/перенорма -- perenorma
-/норма -- norma
-/дотяг -- dotyag
-/нетнормы -- nnorm
-/неактив -- inactive
-/approve -- null
-/reject -- null
-/del -- null
-/заявления -- applications,заявки
-/addmoder -- mod,moder,модер,addmod
-/removerole -- rrole,сроль,снятьроль
-/kick -- кик,исключить
-/reestr -- реестр
-/ainfo -- null
-/send -- рассылка
-        """
-        alt_text += """
+/addmoder — mod,moder,модер,addmod
+/removerole — rrole,сроль,снятьроль
+/kick — кик,исключить
+/send — рассылка
+        """,
+        "admin": """
 Команды администратора:
-/lvl -- level,уровень
-/addsenmoder -- smod,senmoder,стмодер,addsmod
-/снят -- null
-/blacklistform -- чсм
-         """
-        alt_text += """
+/addsenmoder — smod,senmoder,стмодер,addsmod
+/lvl — level,уровень
+/снят — null
+        """,
+        "senadmin": """
 Команды старшего администратора:
-/bug -- баг
-/addadmin -- adm,admin,админ,addadm
-         """
-        alt_text += """
+/addadmin — adm,admin,админ,addadm
+        """,
+        "depspec": """
 Команды зам.спец администратора:
-/aban -- абан
-/addsenadmin -- sadm,senadmin,стадмин,addsadmin
-/editpoints -- null
-/addpoints -- null
-/editcoins -- null
-/addcoins -- null
-        """
-        alt_text += """
+/addsenadmin — sadm,senadmin,стадмин,addsadmin
+/aban — абан
+/editcoins — null
+/addcoins — null
+        """,
+        "owner": """
 Команды спец.администратора:
-/adelete -- удалить
-/gsync -- синхрон
-/addzsa -- zsa,depspec,зса
-/deldb -- delbd,delbase,deletedb
+/addzsa — zsa,depspec,зса
+/adelete — удалить
+/gsync — синхрон
+/deldb — delbd,delbase,deletedb
         """
-    # РОЛЬ ЗАМА СПЕЦА
-    elif user_role == 'depspec':
-        alt_text += """
-Команды модератора:
-/moders -- модеры
-/staff -- стафф
-/apoints -- все баллы,adminpoints
-/clear -- чистка,очистить
-/gnick -- nicklist,checknick
-/apsync -- null
-         """
-        alt_text += """
-Команды старшего модератора:
-/перенорма -- perenorma
-/норма -- norma
-/дотяг -- dotyag
-/нетнормы -- nnorm
-/неактив -- inactive
-/approve -- null
-/reject -- null
-/del -- null
-/заявления -- applications,заявки
-/addmoder -- mod,moder,модер,addmod
-/removerole -- rrole,сроль,снятьроль
-/kick -- кик,исключить
-/reestr -- реестр
-/ainfo -- null
-/send -- рассылка
-        """
-        alt_text += """
-Команды администратора:
-/lvl -- level,уровень
-/addsenmoder -- smod,senmoder,стмодер,addsmod
-/снят -- null
-/blacklistform -- чсм
-         """
-        alt_text += """
-Команды старшего администратора:
-/bug -- баг
-/addadmin -- adm,admin,админ,addadm
-         """
-        alt_text += """
-Команды зам.спец администратора:
-/aban -- абан
-/addsenadmin -- sadm,senadmin,стадмин,addsadmin
-/editpoints -- null
-/addpoints -- null
-/editcoins -- null
-/addcoins -- null
-        """
-    # РОЛЬ СТАРШЕГО АДМИНИСТРАТОРА
-    elif user_role == 'senadmin':
-        alt_text += """
-Команды модератора:
-/moders -- модеры
-/staff -- стафф
-/apoints -- все баллы,adminpoints
-/clear -- чистка,очистить
-/gnick -- nicklist,checknick
-/apsync -- null
-         """
-        alt_text += """
-Команды старшего модератора:
-/перенорма -- perenorma
-/норма -- norma
-/дотяг -- dotyag
-/нетнормы -- nnorm
-/неактив -- inactive
-/approve -- null
-/reject -- null
-/del -- null
-/заявления -- applications,заявки
-/addmoder -- mod,moder,модер,addmod
-/removerole -- rrole,сроль,снятьроль
-/kick -- кик,исключить
-/reestr -- реестр
-/ainfo -- null
-/send -- рассылка
-        """
-        alt_text += """
-Команды администратора:
-/lvl -- level,уровень
-/addsenmoder -- smod,senmoder,стмодер,addsmod
-/снят -- null
-/blacklistform -- чсм
-         """
-        alt_text += """
-Команды старшего администратора:
-/bug -- баг
-/addadmin -- adm,admin,админ,addadm
-         """
-    # РОЛЬ АДМИНИСТРАТОРА
-    elif user_role == 'admin':
-        alt_text += """
-Команды модератора:
-/moders -- модеры
-/staff -- стафф
-/apoints -- все баллы,adminpoints
-/clear -- чистка,очистить
-/gnick -- nicklist,checknick
-/apsync -- null
-         """
-        alt_text += """
-Команды старшего модератора:
-/перенорма -- perenorma
-/норма -- norma
-/дотяг -- dotyag
-/нетнормы -- nnorm
-/неактив -- inactive
-/approve -- null
-/reject -- null
-/del -- null
-/заявления -- applications,заявки
-/addmoder -- mod,moder,модер,addmod
-/removerole -- rrole,сроль,снятьроль
-/kick -- кик,исключить
-/reestr -- реестр
-/ainfo -- null
-/send -- рассылка
-        """
-        alt_text += """
-Команды администратора:
-/lvl -- level,уровень
-/addsenmoder -- smod,senmoder,стмодер,addsmod
-/снят -- null
-/blacklistform -- чсм
-        """
-    # РОЛЬ СТАРШЕГО МОДЕРАТОРА
-    elif user_role == 'senmoder':
-        alt_text += """
-Команды модератора:
-/moders -- модеры
-/staff -- стафф
-/apoints -- все баллы,adminpoints
-/clear -- чистка,очистить
-/gnick -- nicklist,checknick
-/apsync -- null
-         """
-        alt_text += """
-Команды старшего модератора:
-/перенорма -- perenorma
-/норма -- norma
-/дотяг -- dotyag
-/нетнормы -- nnorm
-/неактив -- inactive
-/approve -- null
-/reject -- null
-/del -- null
-/заявления -- applications,заявки
-/addmoder -- mod,moder,модер,addmod
-/removerole -- rrole,сроль,снятьроль
-/kick -- кик,исключить
-/reestr -- реестр
-/ainfo -- null
-/send -- рассылка
-        """
-    # РОЛЬ МОДЕРАТОРА
-    elif user_role == 'moder':
-        alt_text += """
-Команды модератора:
-/moders -- модеры
-/staff -- стафф
-/apoints -- все баллы,adminpoints
-/clear -- чистка,очистить
-/gnick -- nicklist,checknick
-/apsync -- null
-         """
+    }
+
+    # Определяем порядок ролей для накопления команд
+    role_order = ["moder", "senmoder", "admin", "senadmin", "depspec", "owner"]
+
+    if user_role in role_order:
+        role_index = role_order.index(user_role)
+        for i in range(role_index + 1):
+            alt_text += role_commands[role_order[i]]
 
     # Удаляем сообщение с основными командами
     try:
@@ -3731,333 +2996,13 @@ async def alt_commands_callback(message: Message):
     except Exception as e:
         logging.error(f"Ошибка при удалении вызова alt_commands: {e}")
 
-    # Отправляем сообщение с альтернативными командами и кнопкой "Основные команды"
-    alt_keyboard = {
-        "inline": True,
-        "buttons": [
-            [
-                {
-                    "action": {
-                        "type": "text",
-                        "label": "Основные команды",
-                        "payload": json.dumps({"command": "main_commands"})
-                    },
-                    "color": "primary"
-                }
-            ]
-        ]
-    }
 
+    # Отправляем альтернативные команды
     try:
-        sent_message = await message.answer(alt_text, keyboard=json.dumps(alt_keyboard))
-        alt_cmid = sent_message.conversation_message_id  # Запоминаем для удаления
-        logging.info(f"Альтернативные команды отправлены, cmid: {alt_cmid}")
+        sent_message = await message.answer(alt_text)
+        logging.info(f"Альтернативные команды отправлены, cmid: {sent_message.conversation_message_id}")
     except Exception as e:
         logging.error(f"Ошибка при отправке альтернативных команд: {e}")
-
-# Обработчик кнопки "Основные команды"
-@bot.on.message(payload={"command": "main_commands"})
-async def main_commands_callback(message: Message):
-    global help_cmid, alt_cmid
-    logging.info(f"Получена кнопка 'Основные команды' от пользователя {message.from_id}")
-    user_id = message.from_id
-    user_role = get_user_role(user_id)
-    # Основные команды для всех пользователей
-    help_text = """
-Команды пользователей:    
-/info -- информация о работе обменника
-/change -- обменять баллы на m-coins
-/shop -- показать доступные товары в магазине
-/buy -- купить товар из магазина
-/roulette -- играть в русскую рулетку
-/duel -- сразиться в дуэли с пользователем
-/slot -- играть в слот-машину
-/top -- топ пользователей по балансу
-/reward -- получить ежедневную награду
-/stats -- посмотреть свою статистику
-        """
-    # РОЛЬ СПЕЦА
-    if user_role == 'owner':
-        help_text += """
-Команды модератора:
-/moders -- полный список модерации
-/staff -- участники с ролями
-/apoints -- список баллов всех пользователей
-/clear -- очистить сообщение 
-/gnick -- проверить никнейм пользователя
-/apsync -- синхронизировать базу заявлений
-         """
-        help_text += """
-Команды старшего модератора:
-/перенорма день/неделя -- выдать пользователю баллы за дневную/недельную перенорму
-/норма день/неделя -- выдать пользователю баллы за дневную/недельную норму
-/дотяг день/неделя -- выдать пользователю баллы за дневной/недельный дотяг
-/nnorm day/week -- забрать у пользователя баллы за дневное/недельное отсутствие нормы
-/inactive day -- забрать у пользователя баллы за дневной неактив
-/approve -- одобрить заявление на Мл.М
-/reject -- отклонить заявление на Мл.М
-/del -- удалить кандидата на Мл.М
-/заявления -- список заявлений с вердиктом
-/addmoder -- выдать права модератора пользователю
-/removerole -- забрать роль пользователя
-/kick -- исключить пользователя из беседы
-/reestr -- извлечь данные из реестра Google Sheets
-/ainfo -- узнать информацию о модераторе из Google Sheets
-/send -- отправить сообщение пользователям из базы данных модерации
-        """
-        help_text += """
-Команды администратора:
-/lvl -- изменить уровень модератора
-/addsenmoder -- выдать права старшего модератора пользователю
-/снят -- исключить пользователя из всех бесед модерации
-/blacklistform -- заполнить форму на выдачу ЧСМ (данные из Google Sheets)
-         """
-        help_text += """
-Команды старшего администратора:
-/bug -- сообщить о баге
-/addadmin -- выдать права администратора пользователю
-         """
-        help_text += """
-Команды зам.спец администратора:
-/aban -- закрыть пользователю доступ к экономике бота
-/addsenadmin -- выдать права старшего администратора пользователю
-/ban -- заблокировать пользователя в беседе
-/editpoints -- назначить новое количество баллов пользователю
-/addpoints -- выдать баллы пользователю
-/editcoins -- назначить новое количество коинов пользователю
-/addcoins -- выдать коины пользователю 
-        """
-        help_text += """
-Команды спец.администратора:
-/adelete -- удалить пользователя из базы данных
-/gsync -- синхронизировать беседу с базой данных
-/addzsa -- выдать права заместителя спец.админа пользователю
-/deldb -- удалить таблицу из базы данных
-        """
-    # РОЛЬ ЗАМА СПЕЦА
-    elif user_role == 'depspec':
-        help_text += """
-Команды модератора:
-/moders -- полный список модерации
-/staff -- участники с ролями
-/apoints -- список баллов всех пользователей
-/clear -- очистить сообщение 
-/gnick -- проверить никнейм пользователя
-/apsync -- синхронизировать базу заявлений
-         """
-        help_text += """
-Команды старшего модератора:
-/перенорма день/неделя -- выдать пользователю баллы за дневную/недельную перенорму
-/норма день/неделя -- выдать пользователю баллы за дневную/недельную норму
-/дотяг день/неделя -- выдать пользователю баллы за дневной/недельный дотяг
-/nnorm day/week -- забрать у пользователя баллы за дневное/недельное отсутствие нормы
-/inactive day -- забрать у пользователя баллы за дневной неактив
-/approve -- одобрить заявление на Мл.М
-/reject -- отклонить заявление на Мл.М
-/del -- удалить кандидата на Мл.М
-/заявления -- список заявлений с вердиктом
-/addmoder -- выдать права модератора пользователю
-/removerole -- забрать роль пользователя
-/kick -- исключить пользователя из беседы
-/reestr -- извлечь данные из реестра Google Sheets
-/ainfo -- узнать информацию о модераторе из Google Sheets
-/send -- отправить сообщение пользователям из базы данных модерации
-        """
-        help_text += """
-Команды администратора:
-/lvl -- изменить уровень модератора
-/addsenmoder -- выдать права старшего модератора пользователю
-/снят -- исключить пользователя из всех бесед модерации
-/blacklistform -- заполнить форму на выдачу ЧСМ (данные из Google Sheets)
-         """
-        help_text += """
-Команды старшего администратора:
-/bug -- сообщить о баге
-/addadmin -- выдать права администратора пользователю
-         """
-        help_text += """
-Команды зам.спец администратора:
-/aban -- закрыть пользователю доступ к экономике бота
-/addsenadmin -- выдать права старшего администратора пользователю
-/ban -- заблокировать пользователя в беседе
-/editpoints -- назначить новое количество баллов пользователю
-/addpoints -- выдать баллы пользователю
-/editcoins -- назначить новое количество коинов пользователю
-/addcoins -- выдать коины пользователю 
-        """
-    # РОЛЬ СТАРШЕГО АДМИНИСТРАТОРА
-    elif user_role == 'senadmin':
-        help_text += """
-Команды модератора:
-/moders -- полный список модерации
-/staff -- участники с ролями
-/apoints -- список баллов всех пользователей
-/clear -- очистить сообщение 
-/gnick -- проверить никнейм пользователя
-         """
-        help_text += """
-Команды старшего модератора:
-/перенорма день/неделя -- выдать пользователю баллы за дневную/недельную перенорму
-/норма день/неделя -- выдать пользователю баллы за дневную/недельную норму
-/дотяг день/неделя -- выдать пользователю баллы за дневной/недельный дотяг
-/nnorm day/week -- забрать у пользователя баллы за дневное/недельное отсутствие нормы
-/inactive day -- забрать у пользователя баллы за дневной неактив
-/approve -- одобрить заявление на Мл.М
-/reject -- отклонить заявление на Мл.М
-/del -- удалить кандидата на Мл.М
-/заявления -- список заявлений с вердиктом
-/addmoder -- выдать права модератора пользователю
-/removerole -- забрать роль пользователя
-/kick -- исключить пользователя из беседы
-/reestr -- извлечь данные из реестра Google Sheets
-/ainfo -- узнать информацию о модераторе из Google Sheets
-/send -- отправить сообщение пользователям из базы данных модерации
-        """
-        help_text += """
-Команды администратора:
-/lvl -- изменить уровень модератора
-/addsenmoder -- выдать права старшего модератора пользователю
-/снят -- исключить пользователя из всех бесед модерации
-/blacklistform -- заполнить форму на выдачу ЧСМ (данные из Google Sheets)
-         """
-        help_text += """
-Команды старшего администратора:
-/bug -- сообщить о баге
-/addadmin -- выдать права администратора пользователю
-         """
-    # РОЛЬ АДМИНИСТРАТОРА
-    elif user_role == 'admin':
-        help_text += """
-Команды модератора:
-/moders -- полный список модерации
-/staff -- участники с ролями
-/apoints -- список баллов всех пользователей
-/clear -- очистить сообщение 
-/apsync -- синхронизировать базу заявлений
-         """
-        help_text += """
-Команды старшего модератора:
-/перенорма день/неделя -- выдать пользователю баллы за дневную/недельную перенорму
-/норма день/неделя -- выдать пользователю баллы за дневную/недельную норму
-/дотяг день/неделя -- выдать пользователю баллы за дневной/недельный дотяг
-/nnorm day/week -- забрать у пользователя баллы за дневное/недельное отсутствие нормы
-/inactive day -- забрать у пользователя баллы за дневной неактив
-/approve -- одобрить заявление на Мл.М
-/reject -- отклонить заявление на Мл.М
-/del -- удалить кандидата на Мл.М
-/заявления -- список заявлений с вердиктом
-/addmoder -- выдать права модератора пользователю
-/removerole -- забрать роль пользователя
-/kick -- исключить пользователя из беседы
-/reestr -- извлечь данные из реестра Google Sheets
-/ainfo -- узнать информацию о модераторе из Google Sheets
-/send -- отправить сообщение пользователям из базы данных модерации
-        """
-        help_text += """
-Команды администратора:
-/lvl -- изменить уровень модератора
-/addsenmoder -- выдать права старшего модератора пользователю
-/снят -- исключить пользователя из всех бесед модерации
-/blacklistform -- заполнить форму на выдачу ЧСМ (данные из Google Sheets)
-         """
-    # РОЛЬ СТАРШЕГО МОДЕРАТОРА
-    elif user_role == 'senmoder':
-        help_text += """
-Команды модератора:
-/moders -- полный список модерации
-/staff -- участники с ролями
-/apoints -- список баллов всех пользователей
-/clear -- очистить сообщение 
-/gnick -- проверить никнейм пользователя
-/apsync -- синхронизировать базу заявлений
-         """
-        help_text += """
-Команды старшего модератора:
-/перенорма день/неделя -- выдать пользователю баллы за дневную/недельную перенорму
-/норма день/неделя -- выдать пользователю баллы за дневную/недельную норму
-/дотяг день/неделя -- выдать пользователю баллы за дневной/недельный дотяг
-/nnorm day/week -- забрать у пользователя баллы за дневное/недельное отсутствие нормы
-/inactive day -- забрать у пользователя баллы за дневной неактив
-/approve -- одобрить заявление на Мл.М
-/reject -- отклонить заявление на Мл.М
-/del -- удалить кандидата на Мл.М
-/заявления -- список заявлений с вердиктом
-/addmoder -- выдать права модератора пользователю
-/removerole -- забрать роль пользователя
-/kick -- исключить пользователя из беседы
-/reestr -- извлечь данные из реестра Google Sheets
-/ainfo -- узнать информацию о модераторе из Google Sheets
-/send -- отправить сообщение пользователям из базы данных модерации
-        """
-    # РОЛЬ МОДЕРАТОРА
-    elif user_role == 'moder':
-        help_text += """
-Команды модератора:
-/moders -- полный список модерации
-/staff -- участники с ролями
-/apoints -- список баллов всех пользователей
-/clear -- очистить сообщение 
-/gnick -- проверить никнейм пользователя
-/apsync -- синхронизировать базу заявлений
-         """
-
-    # Удаляем сообщение с альтернативными командами
-    try:
-        if alt_cmid:
-            await bot.api.messages.delete(
-                cmids=[alt_cmid],
-                peer_id=message.peer_id,
-                delete_for_all=True
-            )
-            logging.info(f"Альтернативные команды удалены, cmid: {alt_cmid}")
-            alt_cmid = None
-        else:
-            logging.warning("alt_cmid не найден.")
-    except Exception as e:
-        logging.error(f"Ошибка при удалении альтернативных команд: {e}")
-
-    # Удаляем сообщение пользователя (нажатие кнопки)
-    try:
-        user_cmid = message.conversation_message_id
-        if user_cmid:
-            await bot.api.messages.delete(
-                cmids=[user_cmid],
-                peer_id=message.peer_id,
-                delete_for_all=True
-            )
-            logging.info(f"Сообщение вызова main_commands удалено, cmid: {user_cmid}")
-        else:
-            logging.warning("Не найден cmid для сообщения вызова main_commands.")
-    except Exception as e:
-        logging.error(f"Ошибка при удалении вызова main_commands: {e}")
-
-    # Отправляем заново сообщение с основными командами
-    main_keyboard = {
-        "inline": True,
-        "buttons": [
-            [
-                {
-                    "action": {
-                        "type": "text",
-                        "label": "Альтернативные команды",
-                        "payload": json.dumps({"command": "alt_commands"})
-                    },
-                    "color": "primary"
-                }
-            ]
-        ]
-    }
-
-    try:
-        sent_message = await message.answer(help_text, keyboard=json.dumps(main_keyboard))
-        help_cmid = sent_message.conversation_message_id  # Запоминаем для удаления
-        logging.info(f"Основные команды отправлены, cmid: {help_cmid}")
-    except Exception as e:
-        logging.error(f"Ошибка при отправке /help через main_commands: {e}")
-
-
-
-
 
 # Команда "магазин"
 @bot.on.message(text="/shop")
@@ -4078,12 +3023,12 @@ async def shop_handler(message):
     for category, items in SHOP.items():
         shop_text += f"\n🔹 {category}\n"
         for item_id, item in items.items():
-            shop_text += f"  {item_id}. {item['name']} — {item['price']} M-Coins\n"
+            shop_text += f"  {item_id}. {item['name']}  — {item['price']} M-Coins\n"
     await message.reply(shop_text)
 
-# ------------------------------
+# —----------------------------
 # Новые команды для выдачи ролей
-# ------------------------------
+# —----------------------------
 @bot.on.message(text="/aban <mention>")
 @bot.on.message(text="+aban <mention>")
 @bot.on.message(text="!aban <mention>")
@@ -4466,110 +3411,9 @@ async def remove_role_handler(message, mention: str = None):
         f"[https://vk.com/id{sender_id}|{sender_name}] забрал(а) роль у [https://vk.com/id{target_id}|{target_name}]."
     )
 
-# ------------------------------
-# Команда для обмена баллов на коины
-# ------------------------------
-@bot.on.message(text="/change")
-@bot.on.message(text="/обмен")
-@bot.on.message(text="/обменять")
-@bot.on.message(text="!change")
-@bot.on.message(text="!обмен")
-@bot.on.message(text="!обменять")
-@bot.on.message(text="+change")
-@bot.on.message(text="+обмен")
-@bot.on.message(text="+обменять")
-async def ainfo_no_argument(message):
-    await message.reply("Укажите количество баллов для обмена")
-
-@bot.on.message(text="/change <points:int>")
-@bot.on.message(text="/обмен <points:int>")
-@bot.on.message(text="/обменять <points:int>")
-@bot.on.message(text="!change <points:int>")
-@bot.on.message(text="!обмен <points:int>")
-@bot.on.message(text="!обменять <points:int>")
-@bot.on.message(text="+change <points:int>")
-@bot.on.message(text="+обмен <points:int>")
-@bot.on.message(text="+обменять <points:int>")
-@only_chats
-async def change_handler(message, points: int):
-    sender_role = get_user_role(message.from_id)
-    if sender_role not in ("user", "moder", "senmoder", "admin", "senadmin", "depspec", "owner"):
-        await message.reply("Доступ к использованию команд бота закрыт.")
-        return
-    user_level = get_user_level(message.from_id)
-    # Разрешены только уровни 1, 2 и 3
-    if user_level > 3:
-        await message.reply("Эта команда доступна только рядовой модерации.")
-        return
-    """
-    Обменивает баллы на коины.
-      Курс: 1 балл = 5 коинов.
-    """
-    EXCHANGE_RATE = 5
-    user_id = message.from_id
-    current_points = get_points(user_id)
-    if points > current_points:
-        await message.reply("⛔ У вас недостаточно баллов для обмена.")
-        return
-    coins_received = int(points * EXCHANGE_RATE)
-    update_points_balance(user_id, -points)
-    update_balance(user_id, coins_received)
-    new_balance = get_balance(user_id)
-    new_points = get_points(user_id)
-    user_name = await get_user_name(user_id)
-    response = (f"Вы обменяли {points} баллов на {coins_received} коинов.\n"
-                f"Новый баланс: {new_balance} коинов, {new_points} баллов.")
-    await message.reply(response)
-    # Логирование операции
-    log_text = (f"[#LOGS_CHANGE] [id{user_id}|{user_name}] обменял {points} баллов на "
-                f"{coins_received} коинов. Баланс: {new_balance} коинов, {new_points} баллов.")
-    await log_event(log_text)
-
-@bot.on.message(text="/addpoints")
-@bot.on.message(text="+addpoints")
-@bot.on.message(text="+addpoints")
-async def ainfo_no_argument(message):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "moder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["depapec"]:
-        await message.reply("Недостаточно прав.")
-        return
-    
-    await message.reply("Вы не указали пользователя")
-
-@bot.on.message(text="/addpoints <mention> <amount:int>")
-@bot.on.message(text="+addpoints <mention> <amount:int>")
-@bot.on.message(text="+addpoints <mention> <amount:int>")
-async def add_points_handler(message, mention: str, amount: int):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "moder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["depspec"]:
-        await message.reply("Недостаточно прав.")
-        return
-    
-    target_id = await get_user_id_from_mention(mention)
-    if not target_id:
-        await message.reply("Не удалось определить пользователя по упоминанию.")
-        return
-    if amount <= 0:
-        await message.reply("Сумма должна быть больше 0.")
-        return
-    update_points_balance(target_id, amount)
-    new_points = get_points(target_id)
-    target_name = await get_user_name(target_id)
-    admin_name = await get_user_name(message.from_id)
-    response = (f"Вы успешно добавили {amount} баллов пользователю [https://vk.com/id{target_id}|{target_name}].\n"
-                f"Новый баланс: {new_points} баллов.")
-    await message.reply(response)
-    log_text = (f"[#LOGS_ADD_PT] [id{message.from_id}|{admin_name}] выдал {amount} баллов "
-                f"пользователю [https://vk.com/id{target_id}|{target_name}]. \nНовый баланс: {new_points} баллов.")
-    await log_event(log_text)
-
-# ------------------------------
+# —----------------------------
 # Команды: Русская рулетка и Ежедневная награда
-# ------------------------------
+# —----------------------------
 @bot.on.message(text="/reward")
 @bot.on.message(text="/бонус")
 @bot.on.message(text="/bonus")
@@ -4734,16 +3578,15 @@ async def russian_roulette_handler(message):
 async def info_command(message):
     await message.reply(
         """
-✨ Уникальная валюта магазина модерации — Moderation Coins. Данная валюта отлична от баллов и зарабатывается нижеизложенными методами.
+✨ Уникальная валюта магазина модерации  — Moderation Coins. Данная валюта отлична от баллов и зарабатывается нижеизложенными методами.
 
-— Как заработать M-Coins?
+ — Как заработать M-Coins?
 🔹 Команда /reward - ежедневный бонус (количество коинов зависит от должности).
-🔹 Обмен баллов на коины (/change <количество баллов>)
 🔹 Рулетка (/rr) - можно использовать каждые 2 минуты.
 🔹 Слоты (/slot <ставка>) - можно использовать раз в 5 минут.
 🔹 Повышение: 100 Coins.
 
-— Штрафные санкции со стороны руководства:
+ — Штрафные санкции со стороны руководства:
 🔸 Предупреждение: -50 Coins.
 🔸 Выговор: -100 Coins.
 🔸 Отсутствие активности долгое время (5+ дней): обнуление.
@@ -4751,84 +3594,6 @@ async def info_command(message):
 ❗️ Важно: за распространение любой информации из обменника будет выдан Черный Список Модерации (ЧСМ) без возможности обжалования.
         """
     )
-
-@bot.on.message(text="/rules")
-@bot.on.message(text="/правила")
-@bot.on.message(text="!rules")
-@bot.on.message(text="!правила")
-@bot.on.message(text="+rules")
-@bot.on.message(text="+правила")
-@only_chats
-async def info_command(message):
-    await message.reply(
-        """
-1. Общее положение
-1.1. Главный модератор вправе редактировать данный свод правил в любое время.
-1.2. Данный свод правил является негласным и к общим правилам модерации отношения не имеет.
-1.3. Модератор обязан выполнять каждый пункт правил данного свода.
-1.4. За невыполнение, модератор будет снят по отсутствию доверия.
-
-2. Модератор обязан
-2.1. Поставить префикс на общем Discord сервере по форме.
-2.2. В обязательном порядке выполнять требования и поручения руководства модерации своего сервера.
-2.3. Выполнять установленный норматив.
-2.4. Являться на еженедельные собрания.
-        """
-    )
-
-@bot.on.message(text=["/apoints", "!apoints", "+apoints", "/все баллы", "!все баллы", "+все баллы"])
-async def all_points_handler(message: Message):
-    user_role = get_user_role(message.from_id)
-    if user_role not in ['senmoder', 'admin', 'senadmin', 'depspec', 'owner']:
-        await message.answer("Недостаточно прав.")
-        return
-
-    conn = sqlite3.connect("database.db")  # Убедись, что путь к БД правильный
-    cursor = conn.cursor()
-
-    # Получаем user_id, уровень и количество баллов
-    cursor.execute("SELECT user_id, level, points FROM users")
-    users = cursor.fetchall()
-
-    # Получаем никнеймы пользователей
-    cursor.execute("SELECT vk_id, nickname FROM nicknames")
-    nicknames = dict(cursor.fetchall())
-
-    conn.close()
-
-    if not users:
-        await message.reply("Список пользователей пуст.")
-        return
-
-    mod_level_names = {
-        1: "Младшие модераторы",
-        2: "Модераторы",
-        3: "Старшие модераторы",
-        4: "Куратор модерации",
-        5: "Зам.Главного модератора",
-        6: "Администраторы",
-        7: "Главный модератор"
-    }
-
-    grouped = {}
-    for user_id, level, points in users:
-        group_name = mod_level_names.get(level, f"Уровень {level}")
-        grouped.setdefault(group_name, []).append((user_id, points))
-
-    sorted_groups = sorted(grouped.items(), key=lambda x: -list(mod_level_names.keys()).index(next((k for k, v in mod_level_names.items() if v == x[0]), 0)))
-
-    output_lines = []
-    for group_name, user_data in sorted_groups:
-        output_lines.append(f"{group_name}:")
-        names = []
-        for uid, points in sorted(user_data, key=lambda x: x[1], reverse=True):  # Сортируем по баллам
-            name = nicknames.get(uid, await get_user_name(uid))
-            names.append(f"[https://vk.com/id{uid}|{name}] — {points} баллов")
-        output_lines.append("\n".join(names))
-        output_lines.append("")
-
-    await message.reply("\n".join(output_lines).strip())
-
 
 @bot.on.message(text="/duel <mention> <value:int>")
 async def duel_handler(message, mention: str, value: int):
@@ -4963,264 +3728,6 @@ async def decline_duel_handler(message):
         f"❌ [id{target}|{target_name}] отказался от дуэли с [id{challenger}|{challenger_name}]."
     )
 
-@bot.on.message(text="/sync")
-async def sync_handler(message):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "senmoder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-    """Команда /sync – синхронизировать таблицу заявок с таблицей из Google CSV."""
-    result = sync_applications_from_google()
-    await message.reply(result)
-
-
-# 📌 Фиксируем обработку команды REJECT (отклонение заявки)
-@bot.on.message(text=["/reject <args>", "!reject <args>", "+reject <args>"])
-async def reject_handler(message: Message, args: str):
-    parts = args.split(maxsplit=1)  # Делим команду: nickname reason
-    if len(parts) < 2:
-        await message.reply("⚠ Ошибка: укажите ник и причину отклонения.\nПример: `/reject Ivan Причина`")
-        return
-    
-    nickname, reason = parts[0], parts[1].strip()
-    
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    nick = get_base_nickname(nickname)
-
-    # 🔍 Ищем кандидата в Google-таблице перед добавлением в БД
-    application = await find_application_in_google(nickname)  # ✅ Дожидаемся результата
-    if not application:
-        await message.reply(f"Кандидат {nick} не найден в таблице!")
-        return
-
-    # Получаем VK-страницу
-    vk_page = application.get("vk", "Не найден")
-
-    # Добавляем в БД
-    await add_application(nick, vk_page, "отказан", reason)
-    await message.reply(f"⛔ Кандидатура {nick} ({'[' + vk_page + ']' if vk_page != 'Не найден' else 'VK не найден'}) отклонена.\n📌 Причина: {reason}")
-
-# 📌 Фиксируем обработку команды APPROVE (одобрение заявки)
-@bot.on.message(text=["/approve <nickname>", "!approve <nickname>", "+approve <nickname>"])
-async def approve_handler(message: Message, nickname: str):
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("❌ Недостаточно прав.")
-        return
-
-    nick = get_base_nickname(nickname)
-
-    # 🔍 Ищем кандидата в Google-таблице перед добавлением в БД
-    application = await find_application_in_google(nickname)  # ✅ Дожидаемся результата
-
-    if not application:
-        await message.reply(f"⚠ Кандидат {nick} не найден в таблице!")
-        return
-
-    # Получаем VK-страницу
-    vk_page = application.get("vk", "Не найден")
-
-    # Добавляем в БД
-    await add_approve(nick, vk_page, "одобрен")
-    await message.reply(f"Кандидатура {nick} ({'[' + vk_page + ']' if vk_page != 'Не найден' else 'VK не найден'}) одобрена.")
-
-# 📌 Фиксим сохранение заявки в БД (ловим ошибки)
-async def add_application(nickname: str, vk_page: str, verdict: str, reason: str = None):
-    try:
-        async with aiosqlite.connect(DB_PATH) as db:
-            await db.execute(
-                "INSERT INTO applications (nickname, vk, verdict, reason) VALUES (?, ?, ?, ?)",
-                (nickname, vk_page, verdict, reason)
-            )
-            await db.commit()
-    except Exception as e:
-        print(f"Ошибка при сохранении заявки: {e}")
-
-# 📌 Фиксим сохранение одобрения в БД
-async def add_approve(nickname: str, vk_page: str, verdict: str):
-    try:
-        async with aiosqlite.connect(DB_PATH) as db:
-            await db.execute(
-                "INSERT INTO applications (nickname, vk, verdict) VALUES (?, ?, ?)",
-                (nickname, vk_page, verdict)
-            )
-            await db.commit()
-    except Exception as e:
-        print(f"Ошибка при сохранении одобрения: {e}")
-
-
-@bot.on.message(text="/applications")
-@bot.on.message(text="+applications")
-@bot.on.message(text="!applications")
-@bot.on.message(text="/заявления")
-@bot.on.message(text="+заявления")
-@bot.on.message(text="!заявления")
-@bot.on.message(text="/заявки")
-@bot.on.message(text="+заявки")
-@bot.on.message(text="!заявки")
-async def applications_handler(message):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "senmoder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-    """Выводит список заявлений, включая VK и причину отказа (если есть)."""
-
-    apps = await get_all_applications()
-
-    # Вывод всех записей в консоль для проверки
-    print("DEBUG: Полный список заявок из БД:", apps)  
-
-    if not apps:
-        await message.reply("Нет заявлений.")
-        return
-
-    approved_apps = []
-    rejected_apps = []
-
-    for app in apps:
-        print(f"DEBUG: Обрабатываем заявку: {app}")  # Логируем каждую заявку
-
-        nickname = app[0]  # Никнейм
-        verdict = app[1]    # Вердикт
-        reason = None       # Причина отказа (если есть)
-        vk_page = None      # Ссылка на VK (если есть)
-
-        # Обрабатываем данные с учетом количества элементов
-        if len(app) >= 3:
-            reason = app[2] if verdict == "отказан" else None
-        if len(app) >= 4:
-            vk_page = app[3]  # Последний элемент - это VK
-
-        print(f"DEBUG: Извлечено - Ник: {nickname}, Вердикт: {verdict}, Причина: {reason}, VK: {vk_page}")
-
-        # Формируем кликабельную ссылку на VK
-        user_link = f"[{vk_page}|{nickname}]" if vk_page else nickname
-
-        if verdict.lower() == "одобрен":
-            approved_apps.append(user_link)
-        elif verdict.lower() == "отказан":
-            reason_text = f": {reason}" if reason else ""
-            rejected_apps.append(f"{user_link}{reason_text}")
-
-    response = "🔹 База заявлений 🔹\n\n"
-    if approved_apps:
-        response += "✅ Одобренные:\n" + "\n".join(approved_apps) + "\n\n"
-    if rejected_apps:
-        response += "⛔ Отказанные:\n" + "\n".join(rejected_apps) + "\n"
-
-    await message.reply(response.strip())
-
-
-@bot.on.message(text="/adb")
-async def test_db_handler(message):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "senmoder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM applications")
-    rows = cursor.fetchall()
-    conn.close()
-
-    print("DEBUG: Записи в БД applications:", rows)
-
-    if not rows:
-        await message.reply("В таблице заявлений нет записей.")
-    else:
-        await message.reply(f"Найдено {len(rows)} записей в базе заявлений.")
-
-
-@bot.on.message(text="/del")
-@bot.on.message(text="+del")
-@bot.on.message(text="!del")
-async def ainfo_no_argument(message):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "senmoder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-    await message.reply("Укажите NickName.")
-
-@bot.on.message(text="/del <nickname>")
-@bot.on.message(text="+del <nickname>")
-@bot.on.message(text="!del <nickname>")
-async def delete_application_handler(message, nickname: str):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "senmoder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    # Пытаемся удалить запись из таблицы applications
-    try:
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM applications WHERE nickname = ?", (nickname,))
-        conn.commit()
-        conn.close()
-        
-        await message.reply(f"Запись для кандидата '{nickname}' успешно удалена.")
-    except Exception as e:
-        await message.reply(f"Ошибка при удалении записи: {e}")
-
-
-@bot.on.message(text="Никита")
-@bot.on.message(text="никита")
-@bot.on.message(text="nikita")
-@bot.on.message(text="Nikita")
-async def info_command(message):
-    await message.reply(
-        """
-Никита лучший ❤❤❤
-        """
-    )
-
-@bot.on.message(text="/abalance")
-@bot.on.message(text="+abalance")
-@bot.on.message(text="!abalance")
-@bot.on.message(text="/абаланс")
-@bot.on.message(text="+абаланс")
-@bot.on.message(text="!абаланс")
-async def info_command(message):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "moder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["moder"]:
-        await message.reply("Недостаточно прав.")
-        return
-    await message.reply(
-        """
-Вся информация из команды переехала в /stats <mention>
-        """
-    )
-
-@bot.on.message(text="/balance")
-@bot.on.message(text="+balance")
-@bot.on.message(text="!balance")
-@bot.on.message(text="/баланс")
-@bot.on.message(text="+баланс")
-@bot.on.message(text="!баланс")
-async def info_command(message):
-    await message.reply(
-        """
-Вся информация из команды переехала в /stats
-        """
-    )
-
-
 # =========================================
 # Команда /slot <ставка> – слот-машина с КД 5 минут
 # =========================================
@@ -5284,249 +3791,6 @@ async def slot_handler(message, bet: int = None):
         update_balance(user_id, -bet)
         new_balance = get_balance(user_id)
         await message.reply(f"💥 К сожалению, вы проиграли ставку {bet} коинов. Новый баланс: {new_balance} коинов.")
-
-@bot.on.message(text="/ainfo")
-@bot.on.message(text="+ainfo")
-@bot.on.message(text="!ainfo")
-async def ainfo_no_argument(message):
-    if not await check_chat_id(message):
-        return
-    await message.reply("Укажите NickName.")
-
-@bot.on.message(text="/ainfo <nickname>")
-@bot.on.message(text="+ainfo <nickname>")
-@bot.on.message(text="!ainfo <nickname>")
-@bot.on.message(text="/astats <nickname>")
-@bot.on.message(text="+astats <nickname>")
-@bot.on.message(text="!astats <nickname>")
-@bot.on.message(text="/admininfo <nickname>")
-@bot.on.message(text="+admininfo <nickname>")
-@bot.on.message(text="!admininfo <nickname>")
-@bot.on.message(text="/adminstats <nickname>")
-@bot.on.message(text="+adminstats <nickname>")
-@bot.on.message(text="!adminstats <nickname>")
-async def ainfo_handler(message, nickname: str):
-    if not await check_chat_id(message):
-        return
-    sender_role = get_user_role(message.from_id)
-    if sender_role not in ("senmoder", "admin", "owner"):
-        await message.reply("Недостаточно прав.")
-        return
-
-    info = get_info_from_csv(nickname)
-    if "error" in info:
-        await message.reply(f"{info['error']}")
-        return
-
-    reestr = get_link_from_csv(nickname)
-    if "error" in reestr:
-        await message.reply(f"{reestr['error']}")
-        return
-    user_id = message.from_id
-    user_name = await get_user_name(user_id)
-
-    # Расчёт дней до повышения
-    last_promotion = info.get('Последнее повышение', 'Неизвестно')
-    current_position = info.get('Должность', 'Неизвестно')
-    promotion_info = calculate_days_until_promotion(last_promotion, current_position)
-
-    # Расчёт дней до повышения
-    last_promotion = info.get('Последнее повышение', '')
-    current_position = info.get('Должность', '')
-    iskl_info = calculate_days_until_iskl(last_promotion, current_position)
-
-    response = (
-        f"👤 ADMIN INFO for [{reestr['Страница ВК (цифрами, узнать можно на сайте https://regvk.com )']}|{info['NickName']}]:\n\n"
-        f"🔐 Основная информация 🔐\n"
-        f"NickName: {reestr['Игровой NickName']}\n"
-        f"Статус: {reestr['Актуальность (стоит ли человек на данный момент)']}\n"   
-        f"Должность: {info['Должность']}\n"
-        f"Номер в реестре: {info['№ в реестре']}\n\n"
-        f"🛡 Информация о человеке 🛡\n"
-        f"Реальное имя: {info['Реальное имя']}\n"
-        f"Дата рождения: {info['Дата рождения']}\n"
-        f"Возраст: {info['Возраст']}\n"
-        f"Доступ с ПК: {info['Доступ с ПК']}\n"
-        f"Часовой пояс: {info['Часовой пояс']}\n\n"
-        f"🔗 Ссылки юзера 🔗\n"
-        f"US Discord: {info['Username Discord']}\n"
-        f"ID Discord: {info['Discord ID']}\n"
-        f"VK: {reestr['Страница ВК (цифрами, узнать можно на сайте https://regvk.com )']}\n"
-        f"TG: {reestr['Telegram ']}\n"
-        f"FA: {reestr['Ссылка на форумный аккаунт']}\n"
-        f"Email: {reestr['Адрес электронной почты']}\n\n"
-        f"📆 Важные даты 📆\n"    
-        f"Дата назначения: {info['Дата назначения']}\n"
-        f"Последнее повышение: {info['Последнее повышение']}\n"
-        f"Дата внесения в реестр: {reestr['Дата']}\n\n"
-        f"⏲ Важные дни ⏲\n"
-        f"Еженедельные отчеты: {info['Еженедельные']}\n" 
-        f"Дней всего: {info['Дней всего']}\n"
-        f"Дней на посту: {info['Дней на посту']}\n"
-        f"Дней до повышения: {promotion_info} (с искл. - {iskl_info})\n\n"
-        f"⛔️ Наказания ⛔️\n"
-        f"Предупреждения: {info['Предупреждения']}\n"
-        f"Выговоры: {info['Выговоры']}"   
-    )
-    await message.reply(response)
-
-@bot.on.message(text="/reestr")
-@bot.on.message(text="/реестр")
-@bot.on.message(text="+reestr")
-@bot.on.message(text="+реестр")
-@bot.on.message(text="!reestr")
-@bot.on.message(text="!реестр")
-async def ainfo_no_argument(message):
-    await message.reply("Укажите номер необходимой записи реестра (#X).")
-
-@bot.on.message(text="/reestr <reestr>")
-@bot.on.message(text="/реестр <reestr>")
-@bot.on.message(text="+reestr <reestr>")
-@bot.on.message(text="+реестр <reestr>")
-@bot.on.message(text="!reestr <reestr>")
-@bot.on.message(text="!реестр <reestr>")
-async def ainfo_handler(message, reestr: str):
-    sender_role = get_user_role(message.from_id)
-    if sender_role not in ("senmoder", "admin", "owner"):
-        await message.reply("Недостаточно прав.")
-        return
-    info = get_reestr_from_csv(reestr)
-    if "error" in info:
-        await message.reply(f"{info['error']}")
-        return
-    user_id = message.from_id
-    user_name = await get_user_name(user_id)
-    response = (
-        f"📂 Запись реестра [{info['Страница ВК (цифрами, узнать можно на сайте https://regvk.com )']}|{info['№']}]:\n\n"
-        f"NickName: {info['Игровой NickName']}\n"
-        f"Статус: {info['Актуальность (стоит ли человек на данный момент)']}\n\n"
-        f"Отметка времени: {info['Отметка времени']}\n"
-        f"Реальное имя: {info['Реальное имя']}\n"
-        f"Дата рождения: {info['Дата рождения']}\n"
-        f"Возраст: {info['Возраст (полных лет)']}\n"
-        f"Часовой пояс: {info['Часовой пояс']}\n"
-        f"Адрес электронной почты: {info['Адрес электронной почты']}\n"
-        f"VK: {info['Страница ВК (цифрами, узнать можно на сайте https://regvk.com )']}\n"
-        f"TG: {info['Telegram ']}\n"
-        f"FA: {info['Ссылка на форумный аккаунт']}\n"
-        f"US Discord: {info['Username Discord (тег)']}\n"
-        f"ID Discord: {info['ID Discord (цифрами)']}\n"    
-        f"Дата внесения в реестр: {info['Дата']}"
-    )
-    await message.reply(response)
-
-@bot.on.message(text="/infosheet")
-async def infosheet_handler(message):
-    sender_role = get_user_role(message.from_id)
-    if sender_role not in ("senmoder", "admin", "owner"):
-        await message.reply("Недостаточно прав.")
-        return
-
-    nicknames = get_all_nicknames()
-    response = "📄 Список никнеймов:\n" + "\n".join(nicknames)
-    await message.reply(response)
-
-@bot.on.message(text="/blacklistform")
-@bot.on.message(text="+blacklistform")
-@bot.on.message(text="!blacklistform")
-@bot.on.message(text="/формачсм")
-@bot.on.message(text="!формачсм")
-@bot.on.message(text="+формачсм")
-@bot.on.message(text="/чсм")
-@bot.on.message(text="+чсм")
-@bot.on.message(text="!чсм")
-@bot.on.message(text="/formblack")
-@bot.on.message(text="+formblack")
-@bot.on.message(text="!formblack")
-async def ainfo_no_argument(message):
-    await message.reply("Укажите NickName.")
-
-@bot.on.message(text="/blacklistform <nickname>")
-@bot.on.message(text="+blacklistform <nickname>")
-@bot.on.message(text="!blacklistform <nickname>")
-@bot.on.message(text="/формачсм <nickname>")
-@bot.on.message(text="!формачсм <nickname>")
-@bot.on.message(text="+формачсм <nickname>")
-@bot.on.message(text="/чсм <nickname>")
-@bot.on.message(text="+чсм <nickname>")
-@bot.on.message(text="!чсм <nickname>")
-@bot.on.message(text="/formblack <nickname>")
-@bot.on.message(text="+formblack <nickname>")
-@bot.on.message(text="!formblack <nickname>")
-async def ainfo_handler(message, nickname: str):
-    sender_role = get_user_role(message.from_id)
-    if sender_role not in ("admin", "owner"):
-        await message.reply("Недостаточно прав.")
-        return
-    
-    invoker_id = message.from_id
-    info = get_info_from_csv(nickname)
-    if "error" in info:
-        await message.reply(f"{info['error']}")
-        return
-
-    reestr = get_link_from_csv(nickname)
-    if "error" in reestr:
-        await message.reply(f"{reestr['error']}")
-        return
-
-    user_id = message.from_id
-    user_name = await get_user_name(user_id)
-
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-
-    today_date = datetime.now().strftime("%d.%m.%Y")
-
-    # Получаем никнейм вызывающего пользователя
-    invoker_nickname = get_nickname(invoker_id)
-    if not invoker_nickname:
-        await message.reply("У вас отсутствует привязанный никнейм")
-        conn.close()
-        return
-
-    response = (
-        f"1. Кто вносит: {invoker_nickname}\n"
-        f"2. Ваш сервер: SURGUT\n"
-        f"3. Ник ЧСера: {info['NickName']}\n"
-        f"4. Дата внесения: {today_date}\n"
-        f"5. Причина ЧСа:\n"
-        f"6. Ссылка на вк ( id в цифрах ): {reestr['Страница ВК (цифрами, узнать можно на сайте https://regvk.com )']}\n"
-        f"7. ID Дискорда: {info['Discord ID']}\n"
-        f"8. Форум: {reestr['Ссылка на форумный аккаунт']}\n"
-        f"9. Возможность выхода ( если да, то через сколько ):\n"
-        f"10. Доказательства:\n"
-        f"11. Дополнительная информация ( не обязательно ):"
-    )
-    await message.reply(response)
-
-@bot.on.message(text="/wiewcode")
-@bot.on.message(text="!wiewcode")
-@bot.on.message(text="+wiewcode")
-@bot.on.message(text="/код")
-@bot.on.message(text="!код")
-@bot.on.message(text="+код")
-@bot.on.message(text="/code")
-@bot.on.message(text="!code")
-@bot.on.message(text="+code")
-@bot.on.message(text="/просмотр кода")
-@bot.on.message(text="!просмотр кода")
-@bot.on.message(text="+просмотр кода")
-@only_chats
-async def view_code_command(message):
-    user_role = get_user_role(message.from_id)
-    if user_role != "owner":
-        await message.reply("Недостаточно прав.")
-        return
-    
-    with open(__file__, "r", encoding="utf-8") as f:
-        code = f.read()
-    
-    chunk_size = 4000  # Максимальный размер части сообщения
-    chunks = [code[i:i+chunk_size] for i in range(0, len(code), chunk_size)]
-    
-    for i, chunk in enumerate(chunks):
-        await message.reply(f"Часть {i+1}/{len(chunks)}:\n\n{chunk}")
 
 @bot.on.message(text="/clear")
 @bot.on.message(text="+clear")
@@ -5603,67 +3867,6 @@ async def view_database_tables(message):
     except Exception as e:
         await message.reply(f"Ошибка при чтении базы данных: {e}")
 
-# Команда для создания нового напоминания
-@bot.on.message(text="/new напоминание")
-async def new_reminder(message):
-    try:
-        # Разбор текста команды
-        params = message.text.split()
-        day_of_week = params[2].lower()
-        reminder_time = params[3]
-        reminder_text = " ".join(params[4:])
-        
-        # Сопоставление дней недели с цифрами
-        days = {
-            "понедельник": "monday",
-            "вторник": "tuesday",
-            "среда": "wednesday",
-            "четверг": "thursday",
-            "пятница": "friday",
-            "суббота": "saturday",
-            "воскресенье": "sunday"
-        }
-        
-        if day_of_week not in days:
-            await message.reply("Неверный день недели. Пожалуйста, используйте одно из значений: понедельник, вторник, среда, четверг, пятница, суббота, воскресенье.")
-            return
-        
-        # Добавление напоминания в список
-        user_id = message.from_id
-        reminder_time = datetime.strptime(reminder_time, "%H:%M").strftime("%H:%M")  # Форматирование времени
-
-        # Сохраняем напоминание
-        if user_id not in reminders:
-            reminders[user_id] = []
-        
-        reminders[user_id].append({
-            "day": days[day_of_week],
-            "time": reminder_time,
-            "text": reminder_text
-        })
-
-        # Планирование напоминания
-        schedule.every().day.at(reminder_time).do(send_reminder(user_id, reminder_text))
-
-        # Ответ пользователю
-        await message.reply(f"Напоминание для {day_of_week} в {reminder_time} добавлено.")
-        
-    except Exception as e:
-        await message.reply(f"Произошла ошибка: {e}")
-
-# Команда для отображения всех напоминаний
-@bot.on.message(text="/напоминания")
-async def show_reminders(message):
-    user_id = message.from_id
-    if user_id not in reminders or not reminders[user_id]:
-        await message.reply("У вас нет активных напоминаний.")
-        return
-    
-    reminder_list = "\n".join([f"{reminder['day'].capitalize()} в {reminder['time']}: {reminder['text']}" 
-                               for reminder in reminders[user_id]])
-    
-    await message.reply(f"Ваши напоминания:\n{reminder_list}")
-
 @bot.on.message(text="/bug")
 @bot.on.message(text="!bug")
 @bot.on.message(text="+bug")
@@ -5703,57 +3906,6 @@ async def bug_report_handler(message, text):
             print(f"Ошибка при отправке админу {admin_id}: {e}")
 
     await message.reply("Ваш баг-репорт отправлен администратору!")
-
-@bot.on.message(text=["/referal"])
-@bot.on.message(text=["!referal"])
-@bot.on.message(text=["+referal"])
-@bot.on.message(text=["/ref"])
-@bot.on.message(text=["!ref"])
-@bot.on.message(text=["+ref"])
-async def ainfo_no_argument(message):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "moder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-    await message.reply("Укажите реферала и никнейм пригласившего")
-
-@bot.on.message(text=["/referal <mention> <referrer_nickname>"])
-@bot.on.message(text=["+referal <mention> <referrer_nickname>"])
-@bot.on.message(text=["!referal <mention> <referrer_nickname>"])
-@bot.on.message(text=["/ref <mention> <referrer_nickname>"])
-@bot.on.message(text=["+ref <mention> <referrer_nickname>"])
-@bot.on.message(text=["!ref <mention> <referrer_nickname>"])
-async def referal_handler(message, mention: str, referrer_nickname: str):
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "moder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-    
-    mentioned_id = extract_mention_id(mention)  # Функция для получения ID упомянутого
-    if not mentioned_id:
-        await message.reply("Ошибка: не удалось определить ID пользователя.")
-        return
-    user_name = await get_user_name(mentioned_id)
-
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-
-    # Проверяем, не записан ли уже пользователь
-    cursor.execute("SELECT * FROM referrals WHERE user_id = ?", (mentioned_id,))
-    if cursor.fetchone():
-        await message.reply("Этот пользователь уже зарегистрирован в реферальной системе.")
-        conn.close()
-        return
-
-    # Записываем нового реферала
-    cursor.execute("INSERT INTO referrals (user_id, referrer_nickname) VALUES (?, ?)", (mentioned_id, referrer_nickname))
-    conn.commit()
-    conn.close()
-
-    await message.reply(f"[https://vk.com/id{mentioned_id}|{user_name}] был зарегистрирован как реферал {referrer_nickname}.")
 
 @bot.on.message(text="/pay")
 @bot.on.message(text="+pay")
@@ -5798,115 +3950,6 @@ async def pay_handler(message, mention: str, amount: int):
     receiver_name = await get_user_name(receiver)
 
     await message.reply(f"✅ Вы успешно передали {amount} коинов пользователю [id{receiver}|{receiver_name}].")
-
-
-
-@bot.on.message(text=["/delreferal"])
-@bot.on.message(text=["!delreferal"])
-@bot.on.message(text=["+delreferal"])
-@bot.on.message(text=["/delref"])
-@bot.on.message(text=["!delref"])
-@bot.on.message(text=["+delref"])
-async def ainfo_no_argument(message):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "moder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-    await message.reply("Вы не указали реферала для удаления")
-
-@bot.on.message(text=["/delreferal <mention>"])
-@bot.on.message(text=["!delreferal <mention>"])
-@bot.on.message(text=["+delreferal <mention>"])
-@bot.on.message(text=["/delref <mention>"])
-@bot.on.message(text=["!delref <mention>"])
-@bot.on.message(text=["+delref <mention>"])
-async def delete_referal_handler(message, mention):
-    # Проверяем, является ли отправитель администратором
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    # Получаем user_id из упоминания
-    ref_id = await get_user_id_from_mention(mention)
-    if not ref_id:
-        await message.reply("Не удалось определить пользователя.")
-        return
-    user_name = await get_user_name(ref_id)
-
-    # Подключаемся к базе данных и удаляем реферала
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-
-    # Проверяем, есть ли такой реферал
-    cursor.execute("SELECT * FROM referrals WHERE user_id = ?", (ref_id,))
-    if not cursor.fetchone():
-        await message.reply("Этот пользователь не является чьим-либо рефералом.")
-        conn.close()
-        return
-
-    # Удаляем реферала
-    cursor.execute("DELETE FROM referrals WHERE user_id = ?", (ref_id,))
-    conn.commit()
-    conn.close()
-
-    await message.reply(f"[https://vk.com/id{ref_id}|{user_name}] больше не является рефералом.")
-
-
-@bot.on.message(text=["/referals"])
-@bot.on.message(text=["+referals"])
-@bot.on.message(text=["!referals"])
-@bot.on.message(text=["/refs"])
-@bot.on.message(text=["+refs"])
-@bot.on.message(text=["!refs"])
-@bot.on.message(text=["/рефералы"])
-@bot.on.message(text=["+рефералы"])
-@bot.on.message(text=["!рефералы"])
-@bot.on.message(text=["/приглашенные"])
-@bot.on.message(text=["+приглашенные"])
-@bot.on.message(text=["!приглашенные"])
-async def referals_handler(message):
-    user_id = message.from_id
-
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-
-    # Получаем никнейм пользователя
-    cursor.execute("SELECT nickname FROM nicknames WHERE vk_id = ?", (user_id,))
-    result = cursor.fetchone()
-    if result:
-        referrer_nickname = result[0]
-    else:
-        referrer_nickname = None
-
-    if not referrer_nickname:
-        await message.reply("У вас еще нет рефералов. Все впереди!")
-        conn.close()
-        return
-
-    # Ищем пользователей, у которых этот ник записан как пригласивший
-    cursor.execute("SELECT user_id FROM referrals WHERE referrer_nickname = ?", (referrer_nickname,))
-    referals = cursor.fetchall()
-    conn.close()
-
-    if not referals:
-        await message.reply("У вас еще нет рефералов. Все впереди!")
-        return
-
-    referal_links = []
-    for ref_id in referals:
-        ref_nick = get_nickname(ref_id[0])  # Функция получения ника
-        ref_link = f"[https://vk.com/id{ref_id[0]}|{ref_nick}]"
-        referal_links.append(ref_link)
-
-    # Добавляем количество рефералов в начало сообщения
-    referals_count = len(referal_links)
-    message_text = f"Количество приглашенных: {referals_count}\n\nСписок рефералов:\n" + "\n".join(referal_links)
-
-    await message.reply(message_text)
-
 
 
 @bot.on.message(text="/рассылка <text>")
@@ -5995,735 +4038,6 @@ async def delete_message(message):
     except Exception as e:
         logging.error(f"Ошибка при удалении сообщения {message.conversation_message_id}: {e}")
 
-#@bot.on.message(text="/apanel")
-#@bot.on.message(text="+apanel")
-#@bot.on.message(text="!apanel")
-#@bot.on.message(text="/admin panel")
-#@bot.on.message(text="+admin panel")
-#@bot.on.message(text="!admin panel")
-#@bot.on.message(text="/panel")
-#@bot.on.message(text="+panel")
-#@bot.on.message(text="!panel")
-#@bot.on.message(text="/панель")
-#@bot.on.message(text="+панель")
-#@bot.on.message(text="!панель")
-#@bot.on.message(text="/админ панель")
-#@bot.on.message(text="+админ панель")
-#@bot.on.message(text="!админ панель")
-async def panel_handler(message):
-    """Обрабатывает команду /panel и открывает панель"""
-    # Команда /panel остается в чате, поэтому не удаляем её
-    invoker_id = message.from_id
-    add_user(invoker_id)
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    invoker_nickname = get_nickname(invoker_id)
-    if not invoker_nickname:
-        await message.reply("Ваш аккаунт не подтвержден. Доступ запрещен.")
-        return
-
-    info = get_info_from_csv(invoker_nickname)
-    if "error" in info:
-        await message.reply(f"⚠️ {info['error']}")
-        return
-
-    panel_text = (
-        "⚜️ Административная панель ⚜️\n\n"
-        f"Ваш никнейм: {invoker_nickname}\n"
-        f"Должность: {info.get('Должность', 'Неизвестно')}\n"
-        f"Уровень прав: {info.get('lvl', 'Неизвестно')}\n\n"
-        f"Ограничение доступа к админ-панели отсутствует."
-    )
-
-    panel_keyboard = {
-        "inline": True,
-        "buttons": [
-            [
-                {
-                    "action": {
-                        "type": "text",
-                        "label": "Все баллы",
-                        "payload": json.dumps({"command": "all_points"})
-                    },
-                    "color": "negative"
-                },
-                {
-                    "action": {
-                        "type": "text",
-                        "label": "Заявления",
-                        "payload": json.dumps({"command": "applications"})
-                    },
-                    "color": "negative"
-                },
-                {
-                    "action": {
-                        "type": "text",
-                        "label": "Модераторы",
-                        "payload": json.dumps({"command": "moders"})
-                    },
-                    "color": "negative"
-                }
-            ],
-            [  
-                {
-                    "action": {
-                        "type": "text",
-                        "label": "Bot info",
-                        "payload": json.dumps({"command": "bot_info"})
-                    },
-                    "color": "negative"
-                },
-                {
-                    "action": {
-                        "type": "text",
-                        "label": "Database",
-                        "payload": json.dumps({"command": "db"})
-                    },
-                    "color": "negative"
-                }
-            ]
-        ]
-    }
-
-    sent_message = await message.answer(panel_text, keyboard=json.dumps(panel_keyboard))
-    panel_messages[message.peer_id] = sent_message.conversation_message_id  # Сохраняем ID окна панели
-
-
-@bot.on.message(payload={"command": "all_points"})
-async def panel_all_points_handler(message):
-    """Команда 'Все баллы'"""
-    await delete_message(message)  # Удаляем сообщение с кнопкой
-
-    # Удаляем предыдущий ответ (если есть)
-    if message.peer_id in user_last_messages:
-        await delete_message_by_id(message.peer_id, user_last_messages[message.peer_id])
-        user_last_messages.pop(message.peer_id, None)
-
-    # Удаляем главное сообщение панели
-    if message.peer_id in panel_messages:
-        await delete_message_by_id(message.peer_id, panel_messages[message.peer_id])
-        panel_messages.pop(message.peer_id, None)
-
-    users = get_all_users_with_points()
-    if not users:
-        await message.reply("Список пользователей пуст.")
-        return
-    
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    response = "🔸 Список баллов модерации 🔸\n"
-    sorted_users = sorted(users, key=lambda x: x[1], reverse=True)
-    for user_id, points in sorted_users:
-        user_name = await get_user_name(user_id)
-        response += f"[https://vk.com/id{user_id}|{user_name}] — {points} баллов\n"
-
-    back_keyboard = {
-        "inline": True,
-        "buttons": [[{
-            "action": {
-                "type": "text",
-                "label": "🔙 Назад",
-                "payload": json.dumps({"command": "back_to_panel"})
-            },
-            "color": "positive"
-        }]]
-    }
-
-    sent_message = await message.answer(response, keyboard=json.dumps(back_keyboard))
-    user_last_messages[message.peer_id] = sent_message.conversation_message_id
-
-
-@bot.on.message(payload={"command": "applications"})
-async def panel_applications_handler(message):
-    """Выводит список заявлений, включая VK и причину отказа (если есть)."""
-    await delete_message(message)  # Удаляем сообщение с кнопкой
-
-    # Удаляем предыдущий ответ (если есть)
-    if message.peer_id in user_last_messages:
-        await delete_message_by_id(message.peer_id, user_last_messages[message.peer_id])
-        user_last_messages.pop(message.peer_id, None)
-
-    # Удаляем главное сообщение панели
-    if message.peer_id in panel_messages:
-        await delete_message_by_id(message.peer_id, panel_messages[message.peer_id])
-        panel_messages.pop(message.peer_id, None)
-
-    apps = await get_all_applications()
-
-    # Вывод всех записей в консоль для проверки
-    print("DEBUG: Полный список заявок из БД:", apps)  
-
-    if not apps:
-        await message.reply("❌ Нет заявлений.")
-        return
-
-    approved_apps = []
-    rejected_apps = []
-
-    for app in apps:
-        print(f"DEBUG: Обрабатываем заявку: {app}")  # Логируем каждую заявку
-
-        nickname = app[0]  # Никнейм
-        verdict = app[1]    # Вердикт
-        reason = None       # Причина отказа (если есть)
-        vk_page = None      # Ссылка на VK (если есть)
-
-        # Обрабатываем данные с учетом количества элементов
-        if len(app) >= 3:
-            reason = app[2] if verdict == "отказан" else None
-        if len(app) >= 4:
-            vk_page = app[3]  # Последний элемент - это VK
-
-        print(f"DEBUG: Извлечено - Ник: {nickname}, Вердикт: {verdict}, Причина: {reason}, VK: {vk_page}")
-
-        # Формируем кликабельную ссылку на VK
-        user_link = f"[{vk_page}|{nickname}]" if vk_page else nickname
-
-        if verdict.lower() == "одобрен":
-            approved_apps.append(user_link)
-        elif verdict.lower() == "отказан":
-            reason_text = f": {reason}" if reason else ""
-            rejected_apps.append(f"{user_link}{reason_text}")
-
-    response = "🔹 База заявлений 🔹\n\n"
-    if approved_apps:
-        response += "✅ Одобренные:\n" + "\n".join(approved_apps) + "\n\n"
-    if rejected_apps:
-        response += "⛔ Отказанные:\n" + "\n".join(rejected_apps) + "\n"
-        
-    back_keyboard = {
-        "inline": True,
-        "buttons": [[{
-            "action": {
-                "type": "text",
-                "label": "🔙 Назад",
-                "payload": json.dumps({"command": "back_to_panel"})
-            },
-            "color": "positive"
-        }]]
-    }
-
-    sent_message = await message.answer(response, keyboard=json.dumps(back_keyboard))
-    user_last_messages[message.peer_id] = sent_message.conversation_message_id
-
-
-
-@bot.on.message(payload={"command": "moders"})
-async def panel_moders_handler(message):
-    """Команда 'Все баллы'"""
-    await delete_message(message)  # Удаляем сообщение с кнопкой
-
-    # Удаляем предыдущий ответ (если есть)
-    if message.peer_id in user_last_messages:
-        await delete_message_by_id(message.peer_id, user_last_messages[message.peer_id])
-        user_last_messages.pop(message.peer_id, None)
-
-    # Удаляем главное сообщение панели
-    if message.peer_id in panel_messages:
-        await delete_message_by_id(message.peer_id, panel_messages[message.peer_id])
-        panel_messages.pop(message.peer_id, None)
-
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    # Получаем всех пользователей из базы (user_id и уровень)
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT user_id, level FROM users")
-    users = cursor.fetchall()
-
-    # Получаем никнеймы пользователей
-    cursor.execute("SELECT vk_id, nickname FROM nicknames")
-    nicknames = {str(vk_id): nickname for vk_id, nickname in cursor.fetchall()}
-
-    conn.close()
-
-    if not users:
-        await message.answer("Список пользователей пуст.")
-        return
-
-    # Определяем отображаемые названия для модераторских уровней
-    mod_level_names = {
-        1: "Младшие модераторы",
-        2: "Модераторы",
-        3: "Старшие модераторы",
-        4: "Куратор модерации",
-        5: "Зам.Главного модератора",
-        6: "Администраторы",
-        7: "Главный модератор"
-    }
-
-    # Группируем пользователей по категориям
-    grouped = {}
-    for user_id, level in users:
-        group_name = mod_level_names.get(level, f"Уровень {level}")
-        grouped.setdefault(group_name, []).append(str(user_id))
-
-    # Сортируем группы по убыванию уровня
-    sorted_groups = sorted(grouped.items(), key=lambda x: -next((k for k, v in mod_level_names.items() if v == x[0]), 0))
-
-    # Формируем итоговый текст
-    output_lines = []
-    for group_name, user_ids in sorted_groups:
-        output_lines.append(f"{group_name}:")
-        names = []
-        for uid in user_ids:
-            # Проверяем, есть ли никнейм в БД
-            name = nicknames.get(uid)
-            if not name:
-                name = await get_user_name(int(uid))  # Преобразуем ID обратно в число
-            names.append(f"[https://vk.com/id{uid}|{name}]")
-        output_lines.append("\n".join(names))
-        output_lines.append("")  # пустая строка между группами
-
-    response = "\n".join(output_lines).strip()
-
-    back_keyboard = {
-        "inline": True,
-        "buttons": [[{
-            "action": {
-                "type": "text",
-                "label": "🔙 Назад",
-                "payload": json.dumps({"command": "back_to_panel"})
-            },
-            "color": "positive"
-        }]]
-    }
-
-    sent_message = await message.answer(response, keyboard=json.dumps(back_keyboard))
-    user_last_messages[message.peer_id] = sent_message.conversation_message_id
-
-@bot.on.message(payload={"command": "bot_info"})
-async def panel_bot_info_handler(message):
-    """Команда 'База заявлений'"""
-    await delete_message(message)  # Удаляем сообщение с кнопкой
-
-    if message.peer_id in user_last_messages:
-        await delete_message_by_id(message.peer_id, user_last_messages[message.peer_id])
-        user_last_messages.pop(message.peer_id, None)
-
-    # Удаляем главное сообщение панели
-    if message.peer_id in panel_messages:
-        await delete_message_by_id(message.peer_id, panel_messages[message.peer_id])
-        panel_messages.pop(message.peer_id, None)
-
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-
-    try:
-        conn = sqlite3.connect("database.db")
-        cursor = conn.cursor()
-
-        # Получаем статистику
-        cursor.execute("SELECT COUNT(*) FROM nicknames")
-        moderators_count = cursor.fetchone()[0]
-
-        cursor.execute("SELECT SUM(balance) FROM users")
-        total_coins = cursor.fetchone()[0] or 0
-
-        cursor.execute("SELECT SUM(points) FROM users")
-        total_points = cursor.fetchone()[0] or 0
-
-        cursor.execute("SELECT COUNT(*) FROM applications")
-        total_applications = cursor.fetchone()[0]
-
-        conn.close()
-
-        info_text = (
-            "📊 ADM BOT STATS:\n\n"
-            f"Количество модераторов: {moderators_count}\n"
-            f"Всего коинов: {total_coins}\n"
-            f"Всего баллов: {total_points}\n"
-            f"Всего заявлений: {total_applications}"
-        )
-
-        back_keyboard = {
-            "inline": True,
-            "buttons": [[{
-                "action": {
-                    "type": "text",
-                    "label": "🔙 Назад",
-                    "payload": json.dumps({"command": "back_to_panel"})
-                },
-                "color": "positive"  # Красная кнопка
-            }]]
-        }
-
-        sent_message = await message.answer(info_text, keyboard=json.dumps(back_keyboard))
-        user_last_messages[message.peer_id] = sent_message.conversation_message_id
-
-    except Exception as e:
-        logging.error(f"Ошибка при выполнении /binfo: {e}")
-        await message.reply("❌ Произошла ошибка при получении информации.")
-
-@bot.on.message(payload={"command": "db"})
-async def panel_db_handler(message):
-    """Команда 'База заявлений'"""
-    await delete_message(message)  # Удаляем сообщение с кнопкой
-
-    if message.peer_id in user_last_messages:
-        await delete_message_by_id(message.peer_id, user_last_messages[message.peer_id])
-        user_last_messages.pop(message.peer_id, None)
-
-    # Удаляем главное сообщение панели
-    if message.peer_id in panel_messages:
-        await delete_message_by_id(message.peer_id, panel_messages[message.peer_id])
-        panel_messages.pop(message.peer_id, None)
-
-    sender_role = get_user_role(message.from_id)
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["depspec"]:
-        text = "❌ Недостаточно прав."
-    else:
-        try:
-            async with aiosqlite.connect("database.db") as db:
-                cursor = await db.execute("SELECT name FROM sqlite_master WHERE type='table';")
-                tables = await cursor.fetchall()
-                table_names = [table[0] for table in tables]
-
-            if table_names:
-                text = "📂 Таблицы в базе данных:\n" + "\n".join(table_names)
-            else:
-                text = "📂 В базе данных нет таблиц."
-        except Exception as e:
-            logging.error(f"Ошибка при выполнении команды: {e}")
-            text = "❌ Произошла ошибка при получении информации."
-
-    # Клавиатура с кнопкой "Назад"
-    back_keyboard = {
-        "inline": True,
-        "buttons": [[{
-            "action": {
-                "type": "text",
-                "label": "🔙 Назад",
-                "payload": json.dumps({"command": "back_to_panel"})
-            },
-            "color": "positive"
-        }]]
-    }
-
-    sent_message = await message.answer(text, keyboard=json.dumps(back_keyboard))
-    user_last_messages[message.peer_id] = sent_message.conversation_message_id
-
-
-@bot.on.message(payload={"command": "back_to_panel"})
-async def back_to_panel_handler(message):
-    """Кнопка 'Назад' возвращает в панель"""
-    await delete_message(message)  # Удаляем сообщение с кнопкой "Назад"
-
-    # Удаляем окно с баллами или заявлениями (если есть)
-    if message.peer_id in user_last_messages:
-        await delete_message_by_id(message.peer_id, user_last_messages[message.peer_id])
-        user_last_messages.pop(message.peer_id, None)
-
-    # Если по каким-то причинам главное сообщение панели осталось – удаляем его
-    if message.peer_id in panel_messages:
-        await delete_message_by_id(message.peer_id, panel_messages[message.peer_id])
-        panel_messages.pop(message.peer_id, None)
-
-    # Отправляем новое окно панели; сообщение с командой /panel остается
-    await panel_handler(message)
-
-
-async def delete_message_by_id(peer_id, cmid):
-    """Удаляет сообщение по ID"""
-    try:
-        await bot.api.messages.delete(
-            cmids=[cmid],
-            peer_id=peer_id,
-            delete_for_all=True
-        )
-    except Exception as e:
-        logging.error(f"Ошибка при удалении сообщения {cmid}: {e}")
-
-@bot.on.message(text="/binfo")
-async def binfo_handler(message):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "senmoder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-    """Команда /binfo выводит статистическую информацию по модерации."""
-    import sqlite3
-    try:
-        conn = sqlite3.connect("database.db")
-        cursor = conn.cursor()
-
-        # 1. Количество модераторов (по количеству записей в таблице nicknames)
-        cursor.execute("SELECT COUNT(*) FROM nicknames")
-        moderators_count = cursor.fetchone()[0]
-
-        # 2. Всего коинов у модерации (сумма поля balance из таблицы users)
-        cursor.execute("SELECT SUM(balance) FROM users")
-        total_coins = cursor.fetchone()[0] or 0
-
-        # 3. Всего баллов у модерации (сумма поля points из таблицы users)
-        cursor.execute("SELECT SUM(points) FROM users")
-        total_points = cursor.fetchone()[0] or 0
-
-        # 4. Всего заявлений в базе (количество записей в таблице applications)
-        cursor.execute("SELECT COUNT(*) FROM applications")
-        total_applications = cursor.fetchone()[0]
-
-        conn.close()
-
-        info_text = (
-            "ADM BOT STATS:\n\n"
-            f"Количество модераторов: {moderators_count}\n"
-            f"Всего коинов: {total_coins}\n"
-            f"Всего баллов: {total_points}\n"
-            f"Всего заявлений: {total_applications}"
-        )
-        await message.reply(info_text)
-    except Exception as e:
-        logging.error(f"Ошибка при выполнении /binfo: {e}")
-        await message.reply("Произошла ошибка при получении информации.")
-
-
-def extract_vk_id(mention: str) -> int:
-    try:
-        return int(mention.strip("[id").split("|")[0])  # Ожидаемый формат: [id123456|Имя]
-    except:
-        return None
-
-
-async def get_vk_name(vk_id: int) -> str:
-    """Функция для получения имени пользователя ВКонтакте"""
-    try:
-        user = await bot.api.users.get(user_ids=vk_id)
-        return f"{user[0].first_name} {user[0].last_name}"
-    except:
-        return "Неизвестный"
-
-
-@bot.on.message(text="/warn <mention> <reason>")
-async def warn_user(message, mention: str, reason: str):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "senmoder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-    await give_punishment(message, mention, reason, "warn", 50)
-
-@bot.on.message(text="/vig <mention> <reason>")
-async def vig_user(message, mention: str, reason: str):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "senmoder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-    await give_punishment(message, mention, reason, "vig", 100)
-
-@bot.on.message(text="/unwarn <mention>")
-async def unwarn_user(message, mention: str):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "senmoder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-    await remove_punishment(message, mention, "warn")
-
-@bot.on.message(text="/unvig <mention>")
-async def unvig_user(message, mention: str):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "senmoder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-    await remove_punishment(message, mention, "vig")
-
-@bot.on.message(text="/punish <mention>")
-async def punish_info(message, mention: str):
-    # Получаем роль отправителя
-    sender_role = get_user_role(message.from_id)
-    # Если роль ниже "senmoder" – выдаём сообщение об отсутствии прав
-    if ROLE_PRIORITY.get(sender_role, 0) < ROLE_PRIORITY["senmoder"]:
-        await message.reply("Недостаточно прав.")
-        return
-    vk_id = extract_vk_id(mention)
-    if not vk_id:
-        await message.reply("Укажите корректного пользователя.")
-        return
-
-    user_name = await get_vk_name(vk_id)
-    user_link = f"[https://vk.com/id{vk_id}|{user_name}]"
-
-    async with aiosqlite.connect("database.db") as db:
-        cursor = await db.execute("""
-            SELECT type, reason, issued_by, issued_at, removed, removed_by, removed_at 
-            FROM punishments WHERE vk_id = ? ORDER BY issued_at DESC
-        """, (vk_id,))
-        records = await cursor.fetchall()
-
-    if not records:
-        await message.reply(f"📜 История наказаний {user_link}\n\n✅ Действующие и снятые наказания отсутствуют.")
-        return
-
-    active, removed = [], []
-    for type_, reason, issued_by, issued_at, removed_flag, removed_by, removed_at in records:
-        issued_at_fmt = datetime.strptime(issued_at, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y %H:%M")
-        issued_by_name = await get_vk_name(issued_by)
-        issued_by_link = f"[https://vk.com/id{issued_by}|{issued_by_name}]"
-
-        punishment_text = f"🔸 Тип: {type_}\n⚜️ Выдал-(а): {issued_by_link}\n📅 Дата: {issued_at_fmt}\n📌 Причина: {reason}"
-
-        if removed_flag == 0:
-            active.append(punishment_text)
-        else:
-            removed_at_fmt = datetime.strptime(removed_at, "%Y-%m-%d %H:%M:%S").strftime("%d-%m-%Y %H:%M")
-            removed_by_name = await get_vk_name(removed_by)
-            removed_by_link = f"[https://vk.com/id{removed_by}|{removed_by_name}]"
-            removed.append(
-                f"{punishment_text}\n✅ Обжаловал: {removed_by_link}\n📅 Дата обжалования: {removed_at_fmt}"
-            )
-
-    response = f"📜 История наказаний {user_link}\n\n"
-    if active:
-        response += "** 🔴 Действующие наказания:\n\n" + "\n\n".join(active) + "\n\n"
-    if removed:
-        response += "** 🟢 Снятые наказания:\n\n" + "\n\n".join(removed) + "\n\n"
-
-    await message.reply(response.strip())
-
-
-async def give_punishment(message, mention, reason, type_, penalty):
-    vk_id = extract_vk_id(mention)
-    if not vk_id:
-        return "❌ Укажите корректного пользователя."
-
-    issuer_id = message.from_id
-    issuer_name = await get_vk_name(issuer_id)
-    user_name = await get_vk_name(vk_id)
-
-    # Преобразуем тип наказания
-    type_mapping = {"warn": "предупреждение", "vig": "выговор"}
-    type_ = type_mapping.get(type_, type_)
-
-    if type_ not in ["предупреждение", "выговор"]:
-        return "❌ Некорректный тип наказания."
-
-    async with aiosqlite.connect("database.db") as conn:
-        await conn.execute(
-            "INSERT INTO punishments (vk_id, type, reason, issued_by) VALUES (?, ?, ?, ?)", 
-            (vk_id, type_, reason, issuer_id)
-        )
-        await conn.execute("UPDATE users SET balance = balance - ? WHERE user_id = ?", (penalty, vk_id))
-
-        # Получаем текущее количество наказаний
-        cursor = await conn.execute(
-            "SELECT COUNT(*) FROM punishments WHERE vk_id = ? AND type = 'предупреждение' AND removed = 0", 
-            (vk_id,)
-        )
-        warn_count = (await cursor.fetchone())[0]
-
-        cursor = await conn.execute(
-            "SELECT COUNT(*) FROM punishments WHERE vk_id = ? AND type = 'выговор' AND removed = 0", 
-            (vk_id,)
-        )
-        vig_count = (await cursor.fetchone())[0]
-
-        # Конвертация предупреждений в выговор
-        if type_ == "предупреждение" and warn_count >= 2:
-            await conn.execute("DELETE FROM punishments WHERE vk_id = ? AND type = 'предупреждение' AND removed = 0", (vk_id,))
-            await conn.execute("INSERT INTO punishments (vk_id, type, reason, issued_by) VALUES (?, 'выговор', 'Конвертация двух предупреждений в выговор', ?)", (vk_id, issuer_id))
-            await conn.execute("UPDATE users SET balance = balance - 100 + 50 WHERE user_id = ?", (vk_id,))
-
-            # Обновляем количество выговоров после конвертации
-            cursor = await conn.execute(
-                "SELECT COUNT(*) FROM punishments WHERE vk_id = ? AND type = 'выговор' AND removed = 0", 
-                (vk_id,)
-            )
-            vig_count = (await cursor.fetchone())[0]
-
-        await conn.commit()
-
-    # Формируем сообщение
-    punishment_message = (
-        f"[https://vk.com/id{issuer_id}|{issuer_name}] выдал-(а) {type_} "
-        f"пользователю [https://vk.com/id{vk_id}|{user_name}].\n\n"
-        f"Причина: {reason}\n"
-        f"Всего: {warn_count}/2 | {vig_count}/3"
-    )
-
-    await message.reply(punishment_message)
-
-    # Автокик при 3-х выговорах
-    if vig_count >= 3:
-        await snjat_handler(message, f"{mention} 3/3")
-
-async def remove_punishment(message, mention, type_):
-    vk_id = extract_vk_id(mention)
-    if not vk_id:
-        return "❌ Укажите корректного пользователя."
-
-    remover_id = message.from_id
-    remover_name = await get_vk_name(remover_id)
-    user_name = await get_vk_name(vk_id)
-
-    # Преобразуем тип наказания
-    type_mapping = {"warn": "предупреждение", "vig": "выговор"}
-    type_ = type_mapping.get(type_, type_)
-
-    if type_ not in ["предупреждение", "выговор"]:
-        return "❌ Некорректный тип наказания."
-
-    async with aiosqlite.connect("database.db") as conn:
-        # Найти самое старое неснятое наказание
-        cursor = await conn.execute(
-            "SELECT id FROM punishments WHERE vk_id = ? AND type = ? AND removed = 0 ORDER BY issued_at ASC LIMIT 1",
-            (vk_id, type_)
-        )
-        record = await cursor.fetchone()
-
-        if not record:
-            return f"✅ У пользователя [https://vk.com/id{vk_id}|{user_name}] нет активных {type_}ов."
-
-        punishment_id = record[0]
-
-        # Снимаем наказание
-        await conn.execute(
-            "UPDATE punishments SET removed = 1, removed_by = ?, removed_at = datetime('now') WHERE id = ?",
-            (remover_id, punishment_id)
-        )
-
-        # Получаем актуальное количество предупреждений и выговоров
-        cursor = await conn.execute(
-            "SELECT COUNT(*) FROM punishments WHERE vk_id = ? AND type = 'предупреждение' AND removed = 0",
-            (vk_id,)
-        )
-        warn_count = (await cursor.fetchone())[0]
-
-        cursor = await conn.execute(
-            "SELECT COUNT(*) FROM punishments WHERE vk_id = ? AND type = 'выговор' AND removed = 0",
-            (vk_id,)
-        )
-        vig_count = (await cursor.fetchone())[0]
-
-        await conn.commit()
-
-    # Формируем сообщение о снятии наказания
-    removal_message = (
-        f"[https://vk.com/id{remover_id}|{remover_name}] снял-(а) {type_} "
-        f"пользователю [https://vk.com/id{vk_id}|{user_name}].\n\n"
-        f"Всего: {warn_count}/2 | {vig_count}/3."
-    )
-
-    await message.reply(removal_message)
-
 @bot.on.message(text="/gnick <mention>")
 @bot.on.message(text="+gnick <mention>")
 @bot.on.message(text="!gnick <mention>")
@@ -6774,7 +4088,6 @@ async def gnick_handler(message, mention: str = None):
     await message.reply(f"Ник [{vk_link}|пользователя] - {nickname}")
 
 
-
 @bot.on.message()
 async def handle_message(message: Message):
     # Подсчет сообщений
@@ -6807,14 +4120,14 @@ async def handle_message(message: Message):
     if message.peer_id == 2000000007:  # ID беседы 7
         welcome_text = (f"[https://vk.com/id{uid}|{user_name}], добро пожаловать в беседу!\n\n"
                         "Не забудь прочитать закреплённое сообщение! Обзвон будет назначен ГМ/ЗГМ. \nВ Discord должен стоять префикс [К/ММ]")
-    elif message.peer_id == 2000000002:  # ID беседы 2
+    elif message.peer_id == 2000000001:  # ID беседы 2
         welcome_text = (f"[https://vk.com/id{uid}|{user_name}], добро пожаловать в беседу руководства модерации сервера!\n\n"
                         "Не забудь прочитать закреплённое сообщение! По всем вопросам обращайся к коллегам по стаффу. ")
     elif message.peer_id == 2000000008:  # ID беседы 8
         welcome_text = (f"[https://vk.com/id{uid}|{user_name}], добро пожаловать в беседу логирования действий руководства и модерации по отношению к боту.")
     else:  # Для всех остальных бесед
         welcome_text = (f"[https://vk.com/id{uid}|{user_name}], добро пожаловать в беседу!\n\n"
-                        "Не забудь прочитать закреплённое сообщение! \nПосмотреть подробную информацию по обменнику и командам бота - «/info» и «/help» (исключительно в exchanger).")
+                        "Не забудь прочитать закреплённое сообщение! \nПосмотреть подробную информацию по обменнику и командам бота - «/info» и «/help» (исключительно в чате обменника).")
 
     try:
         # Отправляем приветственное сообщение

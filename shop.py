@@ -16,9 +16,8 @@ SHOP = {
         10: {"name": "Любое украшение профиля Discord", "price": 1500, "level": 3},
         11: {"name": "Discord Nitro (1 месяц)", "price": 1500, "level": 3},
         12: {"name": "Black Pass (стандартный) на любом сервере BR", "price": 1550, "level": 3},
-        13: {"name": "Эксклюзивный подарок от Главного модератора", "price": 2750, "level": 3},
-        14: {"name": "Набор украшений (аватарка + профиль)", "price": 2750, "level": 3},
-        15: {"name": "Telegram Premium (3 месяца)", "price": 3000, "level": 3},
-        16: {"name": "Discord Nitro (3 месяца)", "price": 3250, "level": 3},
+        13: {"name": "Набор украшений (аватарка + профиль)", "price": 2750, "level": 3},
+        14: {"name": "Telegram Premium (3 месяца)", "price": 3000, "level": 3},
+        15: {"name": "Discord Nitro (3 месяца)", "price": 3250, "level": 3},
     }
 }
