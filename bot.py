@@ -2104,7 +2104,7 @@ async def snjat_handler(message, arg: str):
         admin_name = await get_user_name(admin_id)
         user_name = await get_user_name(uid)
         broadcast_text = (f"[https://vk.com/id{admin_id}|{admin_name}] исключил-(а) "
-                          f"[https://vk.com/id{uid}|{user_name}] из всех бесед модерации сервера <<86>>.\n"
+                          f"[https://vk.com/id{uid}|{user_name}] из всех бесед модерации сервера <<75>>.\n"
                           f"Причина: {reason}")
         for chat_id in kicked_chats:
             try:
@@ -2155,7 +2155,7 @@ async def snjat_reply_handler(message):
         admin_name = await get_user_name(admin_id)
         user_name = await get_user_name(uid)
         broadcast_text = (f"[https://vk.com/id{admin_id}|{admin_name}] исключил-(а) "
-                          f"[https://vk.com/id{uid}|{user_name}] из всех бесед модерации сервера <<86>>.\n"
+                          f"[https://vk.com/id{uid}|{user_name}] из всех бесед модерации сервера <<75>>.\n"
                           f"Причина: {reason}")
         for chat_id in kicked_chats:
             try:
